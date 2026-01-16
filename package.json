@@ -1,0 +1,49 @@
+{
+    "name": "nextjs",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "dev": "next dev",
+        "build": "next build",
+        "start": "next start",
+        "lint": "next lint",
+        "test:e2e": "playwright test",
+        "check-git-hooks": "node .secret-scan/secret-scan.js -- --check-git-hooks",
+        "format": "prettier --write .",
+        "lint-fix": "(eslint --fix --cache --report-unused-disable-directives . || true) && prettier --write .",
+        "lint-check": "eslint --cache --report-unused-disable-directives . && prettier --check .",
+        "prepare": "husky",
+        "test": "playwright test"
+    },
+    "dependencies": {
+        "@playwright/test": "^1.49.0",
+        "@radix-ui/react-slot": "^1.1.0",
+        "class-variance-authority": "^0.7.1",
+        "clsx": "^2.1.1",
+        "lucide-react": "^0.464.0",
+        "mongoose": "^8.9.0",
+        "next": "^15.0.3",
+        "playwright": "^1.49.0",
+        "react": "19.0.0-rc-66855b96-20241106",
+        "react-dom": "19.0.0-rc-66855b96-20241106",
+        "tailwind-merge": "^2.5.5",
+        "zod": "^4.1.12"
+    },
+    "devDependencies": {
+        "@types/node": "^20",
+        "@types/react": "^18",
+        "@types/react-dom": "^18",
+        "@typescript-eslint/eslint-plugin": "^8.15.0",
+        "@typescript-eslint/parser": "^8.15.0",
+        "eslint": "^8",
+        "eslint-config-next": "^15.0.3",
+        "eslint-config-prettier": "^9.1.0",
+        "eslint-plugin-import": "^2.31.0",
+        "husky": "^9.1.7",
+        "postcss": "^8",
+        "prettier": "^3.3.3",
+        "tailwindcss": "^3.4.1",
+        "tailwindcss-animate": "^1.0.7",
+        "typescript": "^5"
+    }
+}
