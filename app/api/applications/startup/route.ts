@@ -1,6 +1,13 @@
+export const runtime = "nodejs";
+
 import { NextResponse } from "next/server";
+import { PrismaClient } from "@/generated/prisma/client";
+
+const prisma = new PrismaClient();
 
 export async function POST(request: Request) {
+    console.log("DATABASE_URL:", process.env.DATABASE_URL);
+
     const {
         StartupName,
         StartupDescription,
@@ -16,8 +23,17 @@ export async function POST(request: Request) {
     }
 
     try {
-        // try uploading the data to the DB using prisma
+        const newStartupApplication = await prisma.startup.create({
+            data: {
+                name: StartupName,
+                description: StartupDescription,
+                fundingGoal: Number(StartupFundingGoal),
+                contact: StartupContact,
+            }
+        }) 
+
         return NextResponse.json({
+            data: newStartupApplication,
             status: "200",
         })
     } catch (err) {
@@ -26,6 +42,5 @@ export async function POST(request: Request) {
             error: "Failed to post project",
             status: "400",
         })
-        // catch any errors
     }
 }

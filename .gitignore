@@ -3,3 +3,5 @@
 next-env.d.ts
 /lib/generated/prisma
 .env
+.env.local
+/generated/prisma
