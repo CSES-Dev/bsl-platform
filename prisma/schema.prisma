@@ -6,16 +6,19 @@
 
 generator client {
   provider = "prisma-client-js"
+  output   = "../generated/prisma/client"
 }
 
 datasource db {
   provider = "mongodb"
+  url      = env("DATABASE_URL")
 }
 
-// Test model
-model User {
+// Application Model
+model Application {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  email     String   @unique
-  name      String
+  type      String
+  status    String   @default("pending")
+  payload   Json
   createdAt DateTime @default(now())
 }
