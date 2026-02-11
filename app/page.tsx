@@ -1,6 +1,6 @@
 import PublicLayout from "@/components/layout/PublicLayout";
 import { currentUserRole, isAdmin, isAuthenticated } from "@/lib/mock-auth";
-
+import Link from "next/link"
 export default function Page() {
     return (
         <PublicLayout>
@@ -23,6 +23,16 @@ export default function Page() {
                     <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
                         Public Action
                     </button>
+                    <Link href = "/leaders">
+                    <button className="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600">
+                        Leadership
+                    </button>
+                    </Link>
+                    <Link href = "/about">
+                    <button className="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600">
+                        About Us
+                    </button>
+                    </Link>
                 </div>
             </div>
         </PublicLayout>
