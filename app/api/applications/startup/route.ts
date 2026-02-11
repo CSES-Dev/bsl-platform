@@ -23,14 +23,18 @@ export async function POST(request: Request) {
     }
 
     try {
-        const newStartupApplication = await prisma.startup.create({
+        const newStartupApplication = await prisma.application.create({
             data: {
-                name: StartupName,
-                description: StartupDescription,
-                fundingGoal: Number(StartupFundingGoal),
-                contact: StartupContact,
+                type: "startup",
+                status: "pending",
+                payload: {
+                    name: StartupName,
+                    description: StartupDescription,
+                    fundingGoal: Number(StartupFundingGoal),
+                    contact: StartupContact,
+                }
             }
-        }) 
+        })
 
         return NextResponse.json({
             data: newStartupApplication,
