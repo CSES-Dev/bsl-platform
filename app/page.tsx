@@ -1,6 +1,6 @@
 import PublicLayout from "@/components/layout/PublicLayout";
 import { currentUserRole, isAdmin, isAuthenticated } from "@/lib/mock-auth";
-
+import Link from "next/link"
 export default function Page() {
   return (
     <PublicLayout>
