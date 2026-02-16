@@ -14,6 +14,29 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+/**
+ * RBAC Roles (MVP)
+ * Stored directly on User for speed.
+ */
+enum Role {
+  USER
+  ADMIN
+}
+
+/**
+ * User Model (for auth + RBAC)
+ */
+model User {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  name      String?
+  image     String?
+  role      Role     @default(USER)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 // Application Model
 model Application {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
@@ -21,4 +44,8 @@ model Application {
   status    String   @default("pending")
   payload   Json
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
+
+
+
