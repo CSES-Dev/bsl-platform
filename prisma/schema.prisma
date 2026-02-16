@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma/client"
 }
 
 datasource db {
@@ -29,14 +28,16 @@ enum Role {
  * User Model (for auth + RBAC)
  */
 model User {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  email     String   @unique
-  name      String?
-  image     String?
-  role      Role     @default(USER)
+  id    String  @id @default(auto()) @map("_id") @db.ObjectId
+  email String  @unique
+  name  String?
+  image String?
+  role  Role    @default(USER)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  events Event[] @relation("UserEvents")
 }
 
 // Application Model
@@ -49,5 +50,24 @@ model Application {
   updatedAt DateTime @updatedAt
 }
 
+model Event {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
+  title       String
+  description String?
 
+  startAt DateTime
+  endAt   DateTime?
+
+  location String?
+  link     String?
+
+  createdByUserId String @db.ObjectId
+  createdByUser   User   @relation("UserEvents", fields: [createdByUserId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([startAt])
+  @@index([createdByUserId])
+}
