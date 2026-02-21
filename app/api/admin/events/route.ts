@@ -20,12 +20,22 @@ export async function POST(req: Request) {
     );
   }
 
+  const startAt = new Date(body.startAt);
+  const endAt = body.endAt ? new Date(body.endAt) : null;
+
+  if (endAt && endAt < startAt) {
+    return NextResponse.json(
+      { error: "endAt cannot be before startAt" },
+      { status: 400 }
+    );
+  }
+
   const created = await prisma.event.create({
     data: {
       title: body.title,
       description: body.description ?? null,
-      startAt: new Date(body.startAt),
-      endAt: body.endAt ? new Date(body.endAt) : null,
+      startAt,
+      endAt,
       location: body.location ?? null,
       link: body.link ?? null,
       createdByUserId: body.createdByUserId, // later: get from session
