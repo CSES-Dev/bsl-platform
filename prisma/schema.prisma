@@ -76,3 +76,6 @@ model Event {
   @@index([startAt])
   @@index([createdByUserId])
 }
+
+
+
