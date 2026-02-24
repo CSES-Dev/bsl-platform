@@ -47,12 +47,16 @@ model Application {
   type           String
   status         String   @default("pending")
 
-  submitterName  String?
-  submitterEmail String?
+  submitterName  String
+  submitterEmail String
 
   payload        Json
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+
+  @@index([createdAt])
+  @@index([type])
+  @@index([status])
 }
 
 model Event {
