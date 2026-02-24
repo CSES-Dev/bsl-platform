@@ -1,20 +1,23 @@
 import PublicLayout from "@/components/layout/PublicLayout";
 import { currentUserRole, isAdmin, isAuthenticated } from "@/lib/mock-auth";
-import Link from "next/link"
+import Link from "next/link";
+
 export default function Page() {
   return (
     <PublicLayout>
-      <div className="p-8">
-        <h1 className="text-2xl font-bold mb-4">Home Page</h1>
-        {/* Mission Placeholder */}
-        <section className="mb-8">
-          <h2 className="text-2xl font-bold mb-2">Our Mission</h2>
-          <p className="text-gray-700">Our mission is ...</p>
+      <div className="mx-auto max-w-4xl px-6 py-12">
+        <h1 className="text-4xl font-semibold tracking-tight">Home</h1>
+
+        <section className="mt-10">
+          <h2 className="text-2xl font-semibold mb-3">Our Mission</h2>
+          <p className="text-gray-700 leading-relaxed">Our mission is ...</p>
         </section>
-        <p className="mb-4 text-sm text-gray-600">
+
+        <p className="mt-6 text-sm text-gray-600">
           Current role: <span className="font-semibold">{currentUserRole}</span>
         </p>
-        <div className="flex gap-2">
+
+        <div className="mt-4 flex gap-2">
           {isAuthenticated() && (
             <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
               User Action
