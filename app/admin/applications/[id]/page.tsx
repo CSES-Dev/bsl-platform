@@ -1,5 +1,9 @@
 import Link from "next/link";
 import { getApplicationById } from "@/services/mockApplications";
+<<<<<<< bsl-10-approve-reject-buttons
+import ApproveRejectButtons from "@/components/admin/ApproveRejectButtons";
+=======
+>>>>>>> main
 
 type Props = {
   params: { id: string };
@@ -25,9 +29,18 @@ export default function ApplicationDetail({ params }: Props) {
     <div className="p-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Application: {app.name}</h1>
+<<<<<<< bsl-10-approve-reject-buttons
+        <div className="flex items-center gap-4">
+          <ApproveRejectButtons id={app.id} />
+          <Link href="/admin/applications" className="text-blue-600 hover:underline">
+            Back
+          </Link>
+        </div>
+=======
         <Link href="/admin/applications" className="text-blue-600 hover:underline">
           Back
         </Link>
+>>>>>>> main
       </div>
 
       <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
