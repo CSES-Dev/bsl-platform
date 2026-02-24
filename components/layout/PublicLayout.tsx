@@ -1,26 +1,15 @@
 import React from "react";
-import { auth } from "@/auth";
-import AuthButton from "@/components/auth/AuthButton";
+import Navbar from "@/components/Navbar";
 
-export default async function PublicLayout({
+export default function PublicLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const session = await auth();
-
   return (
     <>
-      <header className="flex items-center justify-between border-b px-4 py-2">
-        <h1>Public Header</h1>
-        <div className="flex items-center gap-4">
-          {session?.user && (
-            <span className="text-sm text-gray-500" title="Server session">
-              Server: {session.user.email ?? session.user.name}
-            </span>
-          )}
-          <AuthButton />
-        </div>
+      <header>
+        <Navbar />
       </header>
 
       <main>{children}</main>
