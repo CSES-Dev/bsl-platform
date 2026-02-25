@@ -17,7 +17,7 @@ export default function ApplyPage() {
             Startup Application
           </Link>
 
-          <Link href="/apply/org" className="underline">
+          <Link href="/apply/organization" className="underline">
             Org Application
           </Link>
 

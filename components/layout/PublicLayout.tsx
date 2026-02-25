@@ -16,7 +16,7 @@ export default function PublicLayout({
 
       {/* Footer Placeholder */}
       <footer>
-        <h3>Public Footer</h3>
+        <h3>Footer placeholder</h3>
       </footer>
     </>
   );
