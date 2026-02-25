@@ -19,7 +19,7 @@ export default function PublicLayout({
       <main>{children}</main>
 
       <footer>
-        <h3>Public Footer</h3>
+        <h3>Footer placeholder</h3>
       </footer>
     </>
   );
