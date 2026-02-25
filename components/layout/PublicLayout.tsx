@@ -1,4 +1,6 @@
 import React from "react";
+import Navbar from "@/components/Navbar";
+import AuthButton from "@/components/auth/AuthButton";
 
 export default function PublicLayout({
   children,
@@ -7,14 +9,15 @@ export default function PublicLayout({
 }) {
   return (
     <>
-      {/* Header Placeholder */}
       <header>
-        <h1>Public Header</h1>
+        <Navbar />
+        <div className="flex items-center gap-4 px-4">
+          <AuthButton />
+        </div>
       </header>
 
       <main>{children}</main>
 
-      {/* Footer Placeholder */}
       <footer>
         <h3>Footer placeholder</h3>
       </footer>

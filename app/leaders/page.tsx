@@ -1,6 +1,5 @@
-'use client';
-
 import React from 'react';
+import PublicLayout from '@/components/layout/PublicLayout';
 
 export default function AboutUs() {
   const team = [
@@ -55,6 +54,7 @@ export default function AboutUs() {
   ];
 
   return (
+    <PublicLayout>
     <div style={{
       minHeight: '100vh',
       backgroundColor: '#f5f5f5',
@@ -277,6 +277,7 @@ export default function AboutUs() {
         </div>
       </div>
     </div>
+    </PublicLayout>
     
   );
 }

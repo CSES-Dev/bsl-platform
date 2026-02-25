@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma/client"
 }
 
 datasource db {
@@ -14,11 +13,94 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+/**
+ * RBAC Roles (MVP)
+ * Stored directly on User for speed.
+ */
+enum Role {
+  USER
+  REVIEWER
+  AMBASSADOR
+  SUPER_ADMIN
+}
+
+/**
+ * User Model (for auth + RBAC)
+ */
+model User {
+  id    String  @id @default(auto()) @map("_id") @db.ObjectId
+  email String  @unique
+  name  String?
+  image String?
+  role  Role    @default(USER)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  events Event[] @relation("UserEvents")
+}
+
 // Application Model
 model Application {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  type      String
-  status    String   @default("pending")
-  payload   Json
-  createdAt DateTime @default(now())
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  type           String
+  status         String   @default("pending")
+
+  submitterName  String
+  submitterEmail String
+
+  payload        Json
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([createdAt])
+  @@index([type])
+  @@index([status])
 }
+
+model Event {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  title       String
+  description String?
+
+  startAt DateTime
+  endAt   DateTime?
+
+  location String?
+  link     String?
+
+  createdByUserId String @db.ObjectId
+  createdByUser   User   @relation("UserEvents", fields: [createdByUserId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([startAt])
+  @@index([createdByUserId])
+}
+
+model Event {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  title       String
+  description String?
+
+  startAt DateTime
+  endAt   DateTime?
+
+  location String?
+  link     String?
+
+  createdByUserId String @db.ObjectId
+  createdByUser   User   @relation("UserEvents", fields: [createdByUserId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([startAt])
+  @@index([createdByUserId])
+}
+
+
+

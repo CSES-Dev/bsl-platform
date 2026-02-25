@@ -3,3 +3,5 @@
 next-env.d.ts
 /generated/
 .env
+.env.local
+.vscode/
