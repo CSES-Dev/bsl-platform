@@ -10,29 +10,20 @@ export default function ApplyPage() {
           Choose the application you want to start.
         </p>
 
-        <section className="mt-10">
-          <h2 className="text-2xl font-semibold mb-3">Application Types</h2>
-          <div className="flex flex-col gap-4">
-            <Link
-              href="/apply/startup"
-              className="underline text-gray-700 hover:text-black"
-            >
-              Startup Application
-            </Link>
-            <Link
-              href="/apply/organization"
-              className="underline text-gray-700 hover:text-black"
-            >
-              Org Application
-            </Link>
-            <Link
-              href="/apply/team"
-              className="underline text-gray-700 hover:text-black"
-            >
-              Team Application
-            </Link>
-          </div>
-        </section>
+        {/* links container */}
+        <div className="flex flex-col gap-4">
+          <Link href="/apply/startup" className="underline">
+            Startup Application
+          </Link>
+
+          <Link href="/apply/organization" className="underline">
+            Org Application
+          </Link>
+
+          <Link href="/apply/team" className="underline">
+            Team Application
+          </Link>
+        </div>
       </div>
     </PublicLayout>
   );
