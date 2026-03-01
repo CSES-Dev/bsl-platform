@@ -80,27 +80,5 @@ model Event {
   @@index([createdByUserId])
 }
 
-model Event {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-
-  title       String
-  description String?
-
-  startAt DateTime
-  endAt   DateTime?
-
-  location String?
-  link     String?
-
-  createdByUserId String @db.ObjectId
-  createdByUser   User   @relation("UserEvents", fields: [createdByUserId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([startAt])
-  @@index([createdByUserId])
-}
-
 
 
