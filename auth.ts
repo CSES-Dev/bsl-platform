@@ -1,16 +1,11 @@
 import NextAuth from "next-auth";
-import Google from "next-auth/providers/google";
-import { PrismaClient } from "@prisma/client";
-import { Role } from "@prisma/client";
+import { authConfig } from "./auth.config";
+import { PrismaClient, Role } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
-  providers: [Google],
-  session: {
-    strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60,
-  },
+  ...authConfig,
   callbacks: {
     async jwt({ token, user }) {
       if (user?.email) {
