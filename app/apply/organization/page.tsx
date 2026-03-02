@@ -25,10 +25,36 @@ export default function CompanyProjectPage() {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    console.log("Submitting Company Project:", form);
-    alert("Project details logged to console!");
+
+    try {
+      const res = await fetch("/api/applications/org", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Something went wrong");
+      }
+
+      alert(`Application submitted! ID: ${data.id}`);
+
+      // Optional: reset form
+      setForm({
+        companyName: "",
+        projectTitle: "",
+        budget: "",
+        description: "",
+      });
+    } catch (err: any) {
+      alert(err.message);
+    }
   }
 
   return (
@@ -56,7 +82,7 @@ export default function CompanyProjectPage() {
               value={form.companyName}
               onChange={(e) => updateField("companyName", e.target.value)}
               className="rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              placeholder="Acme Corp"
+              placeholder="Organization/Company name"
             />
           </div>
 
@@ -73,7 +99,7 @@ export default function CompanyProjectPage() {
                 value={form.projectTitle}
                 onChange={(e) => updateField("projectTitle", e.target.value)}
                 className="rounded-md border border-gray-300 px-3 py-2"
-                placeholder="Internal CRM Redesign"
+                placeholder="Project title"
               />
             </div>
           </div>
