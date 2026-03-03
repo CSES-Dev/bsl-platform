@@ -7,6 +7,7 @@
         "build": "next build",
         "start": "next start",
         "lint": "next lint",
+        "seed": "npx tsx prisma/seed.ts",
         "test:e2e": "playwright test",
         "check-git-hooks": "node .secret-scan/secret-scan.js -- --check-git-hooks",
         "format": "prettier --write .",
@@ -48,6 +49,7 @@
         "prisma": "^6.19.0",
         "tailwindcss": "^3.4.1",
         "tailwindcss-animate": "^1.0.7",
+        "tsx": "^4.21.0",
         "typescript": "5.9.3"
     }
 }
