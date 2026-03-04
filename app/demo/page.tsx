@@ -1,10 +1,12 @@
 // Example of using a service in a component, also using a reusable component
 
+export const dynamic = "force-dynamic";
+
 import Image from "next/image";
 
 import SimpleButton from "../../components/demobutton";
 
-import { Button } from "@/components/ui/shadcndemobutton";
+import { Button } from "@/components/ui/button";
 import { getProducts } from "@/services/demo";
 
 export default async function DemoPage() {
