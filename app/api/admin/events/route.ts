@@ -53,7 +53,7 @@ export async function POST(req: Request) {
 
   const body = await req.json();
 
-  // createdByUserId should NOT come from client
+
   if (!body.title || !body.startAt) {
     return NextResponse.json(
       { error: "title and startAt are required" },
