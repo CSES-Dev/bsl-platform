@@ -1,7 +1,5 @@
-export const runtime = "nodejs";
-
-import { auth } from "./auth";
-import { hasRole, ADMIN_MIN_ROLE } from "@/lib/rbac";
+import { auth } from "./auth-edge";
+import { hasRole, requiredRoleForAdminPath } from "@/lib/rbac";
 import { NextResponse } from "next/server";
 
 export default auth((req) => {
@@ -19,7 +17,8 @@ export default auth((req) => {
       return NextResponse.redirect(loginUrl);
     }
 
-    if (!hasRole(session.user?.role, ADMIN_MIN_ROLE)) {
+    const requiredRole = requiredRoleForAdminPath(pathname);
+    if (!hasRole(session.user?.role, requiredRole)) {
       return NextResponse.redirect(new URL("/admin/access-denied", req.url));
     }
   }

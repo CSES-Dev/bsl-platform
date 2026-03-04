@@ -9,4 +9,9 @@ export function hasRole(
   return ROLES.indexOf(userRole) >= ROLES.indexOf(requiredRole);
 }
 
-export const ADMIN_MIN_ROLE: Role = "AMBASSADOR";
+export function requiredRoleForAdminPath(pathname: string): Role {
+  if (pathname === "/admin" || pathname.startsWith("/admin/events"))
+    return "AMBASSADOR";
+  if (pathname.startsWith("/admin/applications")) return "REVIEWER";
+  return "SUPER_ADMIN";
+}
