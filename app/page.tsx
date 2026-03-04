@@ -22,6 +22,12 @@ export default function Page() {
           >
             Learn More
           </Link>
+          <Link
+            href="/leaders"
+            className="px-6 py-2 bg-white text-black font-medium hover:bg-black hover:text-white border-2 border-black transition-colors"
+          >
+            Meet Our Leaders
+          </Link>
         </div>
       </div>
     </PublicLayout>
