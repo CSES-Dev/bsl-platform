@@ -1,9 +1,7 @@
 export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@/generated/prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
 
 export async function POST(request: Request) {
   console.log("DATABASE_URL:", process.env.DATABASE_URL);
