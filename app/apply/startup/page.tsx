@@ -21,14 +21,45 @@ export default function StartupApplyPage() {
     fundingGoal: "",
     contact: "",
   });
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
 
   function updateField<K extends keyof StartupFormState>(key: K, value: StartupFormState[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    console.log("Startup application form:", form);
+    setLoading(true);
+    setStatus("idle");
+
+    try {
+      const res = await fetch("/api/applications/startup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          StartupName : form.name,
+          StartupDescription : form.description,
+          StartupFundingGoal : form.fundingGoal,
+          StartupContact : form.contact,
+        }),
+      });
+      if (!res.ok) {
+        throw new Error("Failed to submit application");
+      }
+      setStatus("success");
+      setForm({
+        name: "",
+        description: "",
+        fundingGoal: "",
+        contact: "",
+       });
+    } catch (err) {
+      console.error(err);
+      setStatus("error");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -88,9 +119,17 @@ export default function StartupApplyPage() {
             />
           </div>
 
-          <div className="flex justify-center pt-4">
-            <Button type="submit">Apply</Button>
-          </div>
+          <div className="flex flex-col items-center gap-3 pt-4">
+  {status === "success" && (
+    <p className="text-green-600 font-medium">Application submitted successfully!</p>
+  )}
+  {status === "error" && (
+    <p className="text-red-600 font-medium">Something went wrong. Please try again.</p>
+  )}
+  <Button type="submit" disabled={loading}>
+    {loading ? "Submitting..." : "Apply"}
+  </Button>
+</div>
         </form>
       </div>
     </PublicLayout>
