@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient, Role } from "@/generated/prisma/client";
+import { Role } from "@/generated/prisma/client";
+import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 
-const prisma = new PrismaClient();
+export const dynamic = "force-dynamic";
 
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } },
 ) {
   const session = await auth();
-
   if (!session?.user?.email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -28,6 +28,16 @@ export async function GET(
 
   const application = await prisma.application.findUnique({
     where: { id: params.id },
+    select: {
+      id: true,
+      type: true,
+      status: true,
+      submitterName: true,
+      submitterEmail: true,
+      payload: true,
+      createdAt: true,
+      updatedAt: true,
+    },
   });
 
   if (!application) {
@@ -37,14 +47,12 @@ export async function GET(
   return NextResponse.json({ data: application }, { status: 200 });
 }
 
-
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     const session = await auth();
-
     if (!session?.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -56,32 +64,36 @@ export async function PATCH(
 
     if (
       !dbUser ||
-      (dbUser.role !== Role.REVIEWER &&
-       dbUser.role !== Role.SUPER_ADMIN)
+      (dbUser.role !== Role.REVIEWER && dbUser.role !== Role.SUPER_ADMIN)
     ) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const { status } = await request.json();
-
     if (status !== "approved" && status !== "rejected") {
-      return NextResponse.json(
-        { error: "Invalid status" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Invalid status" }, { status: 400 });
     }
 
     const updated = await prisma.application.update({
       where: { id: params.id },
       data: { status },
+      select: {
+        id: true,
+        type: true,
+        status: true,
+        submitterName: true,
+        submitterEmail: true,
+        payload: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
 
     return NextResponse.json({ data: updated }, { status: 200 });
-
   } catch (err: any) {
     return NextResponse.json(
       { error: "Failed to update application" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
