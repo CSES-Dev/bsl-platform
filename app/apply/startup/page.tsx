@@ -10,7 +10,9 @@ import { Button } from "@/components/ui/button";
 type StartupFormState = {
   name: string;
   description: string;
+  deckUrl: string;
   fundingGoal: string;
+  fundingSiteUrl: string;
   contact: string;
 };
 
@@ -18,7 +20,9 @@ export default function StartupApplyPage() {
   const [form, setForm] = useState<StartupFormState>({
     name: "",
     description: "",
+    deckUrl: "",
     fundingGoal: "",
+    fundingSiteUrl: "",
     contact: "",
   });
 
@@ -41,6 +45,18 @@ export default function StartupApplyPage() {
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
           <div className="space-y-2">
+            <Label htmlFor="name">Startup name</Label>
+            <Input
+              id="name"
+              type="text"
+              value={form.name}
+              onChange={(e) => updateField("name", e.target.value)}
+              placeholder="Your startup name"
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="description">Tell us more about your startup!</Label>
             <Textarea
               id="description"
@@ -53,13 +69,13 @@ export default function StartupApplyPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="name">Link to pitch deck</Label>
+            <Label htmlFor="deckUrl">Link to pitch deck</Label>
             <Input
-              id="name"
+              id="deckUrl"
               type="url"
-              value={form.name}
-              onChange={(e) => updateField("name", e.target.value)}
-              placeholder="Loremipsumdolorsitamet.com"
+              value={form.deckUrl}
+              onChange={(e) => updateField("deckUrl", e.target.value)}
+              placeholder="https://example.com/pitch-deck"
               required
             />
           </div>
@@ -77,13 +93,24 @@ export default function StartupApplyPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="contact">Link to external funding site</Label>
+            <Label htmlFor="fundingSiteUrl">Link to external funding site</Label>
+            <Input
+              id="fundingSiteUrl"
+              type="url"
+              value={form.fundingSiteUrl}
+              onChange={(e) => updateField("fundingSiteUrl", e.target.value)}
+              placeholder="https://example.com/funding"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="contact">Contact email</Label>
             <Input
               id="contact"
-              type="url"
+              type="email"
               value={form.contact}
               onChange={(e) => updateField("contact", e.target.value)}
-              placeholder="Loremipsumdolorsitamet.com"
+              placeholder="founder@startup.com"
               required
             />
           </div>

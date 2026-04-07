@@ -1,5 +1,6 @@
 import React from 'react';
 import LeaderCard2 from '@/components/ui/LeaderCard2';
+import PublicLayout from '@/components/layout/PublicLayout';
 
 const team = [
   {
@@ -54,6 +55,7 @@ const team = [
 
 export default function Leaders() {
   return (
+    <PublicLayout>
     <div style={{
       minHeight: '100vh',
       backgroundColor: '#ffffff',
@@ -141,5 +143,6 @@ export default function Leaders() {
 
       </div>
     </div>
+    </PublicLayout>
   );
 }
