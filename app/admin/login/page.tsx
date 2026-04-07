@@ -14,7 +14,7 @@ export default function AdminLoginPage() {
     }
   }, [session, router]);
 
-  if (status === "loading") {
+  if (status === "loading" || status === "authenticated") {
     return (
       <div className="flex min-h-screen items-center justify-center bg-white">
         Loading...
@@ -69,12 +69,7 @@ export default function AdminLoginPage() {
             textTransform: "uppercase",
           }}
         >
-          <img
-            src="https://api.iconify.design/logos:google-icon.svg"
-            width={22}
-            height={22}
-            alt="Google"
-          />
+          <img src="/google.svg" width={22} height={22} alt="Google" />
           Sign in with Google
         </button>
       </div>

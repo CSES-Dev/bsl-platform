@@ -20,23 +20,40 @@ export default function ProfileDropdown() {
 
   return (
     <div ref={ref} style={{ position: "relative" }}>
-      {session?.user?.image && (
-        <img
-          src={session.user.image}
-          referrerPolicy="no-referrer"
-          alt={session.user.name ?? "Profile"}
-          width={44}
-          height={44}
-          onClick={() => setOpen(!open)}
-          style={{
-            borderRadius: "50%",
-            objectFit: "cover",
-            cursor: "pointer",
-            border: open ? "2px solid #111" : "2px solid transparent",
-            transition: "border 0.15s",
-          }}
-        />
-      )}
+      <button
+        onClick={() => setOpen(!open)}
+        style={{
+          width: 44,
+          height: 44,
+          borderRadius: "50%",
+          overflow: "hidden",
+          cursor: "pointer",
+          border: open ? "2px solid #111" : "2px solid transparent",
+          transition: "border 0.15s",
+          background: "#dff0f5",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontWeight: 700,
+          fontSize: 16,
+          color: "#111",
+        }}
+        aria-label="Open profile menu"
+        aria-expanded={open}
+      >
+        {session?.user?.image ? (
+          <img
+            src={session.user.image}
+            referrerPolicy="no-referrer"
+            alt={session.user.name ?? "Profile"}
+            width={44}
+            height={44}
+            style={{ objectFit: "cover", width: "100%", height: "100%" }}
+          />
+        ) : (
+          <span>{session?.user?.name?.[0]?.toUpperCase() ?? "?"}</span>
+        )}
+      </button>
 
       {open && (
         <div
