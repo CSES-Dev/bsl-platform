@@ -2,6 +2,7 @@
 
 import React from 'react';
 import LeaderCard2 from '@/components/ui/LeaderCard2';
+import PublicLayout from '@/components/layout/PublicLayout';
 
 const team = [
   {
@@ -32,25 +33,25 @@ const team = [
     name: "Alex Thompson",
     title: "Operations Manager",
     bio: "Scaled operations at Uber. Former consultant at McKinsey.",
-    image: "https://ui-avatars.com/api/?name=Alex+Thompson&size=400&background=e5e5e5&color=000&bold=true",
+    image: "men.jpg",
   },
   {
     name: "Maria Garcia",
     title: "Venture Partner",
     bio: "15 years in venture capital. Board member at multiple unicorns.",
-    image: "https://ui-avatars.com/api/?name=Maria+Garcia&size=400&background=e5e5e5&color=000&bold=true",
+    image: "woman.jpg",
   },
   {
     name: "Ryan Mitchell",
     title: "Community Lead",
     bio: "Built communities at Reddit. Former developer relations at GitHub.",
-    image: "https://ui-avatars.com/api/?name=Ryan+Mitchell&size=400&background=e5e5e5&color=000&bold=true",
+    image: "men.jpg",
   },
   {
     name: "Sharad Aggarwal",
     title: "VC",
     bio: "Global head of AI Strategy at Google Cloud.",
-    image: "https://ui-avatars.com/api/?name=Sharad+Aggarwal&size=400&background=e5e5e5&color=000&bold=true",
+    image: "men.jpg",
   },
 ];
 
@@ -116,24 +117,11 @@ export default function Leaders() {
             Join hundreds of successful startups in our program
           </p>
           <a
-            href="/apply"
-            style={{
-              display: 'inline-block',
-              padding: '16px 48px',
-              backgroundColor: '#000',
-              color: '#fff',
-              textDecoration: 'none',
-              fontSize: '16px',
-              fontWeight: '600',
-              borderRadius: '8px',
-              border: '2px solid #000',
-              transition: 'all 0.2s ease',
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#fff'; e.currentTarget.style.color = '#000'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#000'; e.currentTarget.style.color = '#fff'; }}
-          >
-            Apply Now
-          </a>
+  href="/apply"
+  className="inline-block px-12 py-4 bg-black text-white font-semibold border-2 border-black hover:bg-white hover:text-black transition-colors duration-200"
+>
+  Apply Now
+</a>
         </section>
 
         {/* Contact Section */}
@@ -146,18 +134,16 @@ export default function Leaders() {
               { label: 'Twitter', href: 'https://twitter.com/yourcompany' },
               { label: 'LinkedIn', href: 'https://linkedin.com/company/yourcompany' },
             ].map((link) => (
-              <a key={link.label} href={link.href}
-                style={{ color: '#000', textDecoration: 'none', fontSize: '17px', borderBottom: '2px solid transparent', transition: 'border-color 0.2s ease' }}
-                onMouseEnter={(e) => e.currentTarget.style.borderBottomColor = '#000'}
-                onMouseLeave={(e) => e.currentTarget.style.borderBottomColor = 'transparent'}
-              >
-                {link.label}
-              </a>
+              <a
+  href={link.href}
+  className="text-black no-underline text-lg border-b-2 border-transparent hover:border-black transition-colors duration-200"
+></a>
             ))}
           </div>
         </section>
 
       </div>
     </div>
+    </PublicLayout>
   );
 }
