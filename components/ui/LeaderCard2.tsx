@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 
 interface LeaderCardProps {
   name: string;
@@ -36,15 +37,13 @@ export default function LeaderCard2({ name, title, bio, image, reverse = false }
           marginRight: reverse ? '-10px' : '20px',
         }}
       >
-        <img
+        <Image
           src={image}
           alt={name}
+          fill
           style={{
-            width: '100%',
-            height: '100%',
             objectFit: 'cover',
             borderRadius: '14px',
-            display: 'block',
           }}
         />
       </div>
