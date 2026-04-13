@@ -4,17 +4,23 @@ import { useState } from "react";
 import PublicLayout from "@/components/layout/PublicLayout";
 
 type TeamFormState = {
+  submitterName: string;
+  submitterEmail: string;
   teamName: string;
-  projectTitle: string;
-  budget: string;
+  skills: string;
+  teamSize: string;
+  projectPreferences: string; // kinds of projects they want — e.g. "web apps, AI tools"
   description: string;
 };
 
 export default function TeamApplicationPage() {
   const [form, setForm] = useState<TeamFormState>({
+    submitterEmail: "",
+    submitterName: "",
     teamName: "",
-    projectTitle: "",
-    budget: "",
+    skills: "",
+    teamSize: "",
+    projectPreferences: "",
     description: "",
   });
 
@@ -50,39 +56,58 @@ export default function TeamApplicationPage() {
               value={form.teamName}
               onChange={(e) => updateField("teamName", e.target.value)}
               className="w-full rounded-md border px-3 py-2"
-              placeholder="e.g., Alpha Squad"
+              placeholder="e.g. squad"
               required
             />
           </div>
 
-          {/* Project Title */}
+          {/* Team Size */}
           <div className="space-y-2">
-            <label className="block font-medium" htmlFor="projectTitle">
-              Project Title
+            <label className="block font-medium" htmlFor="teamSize">
+              Team Size
             </label>
             <input
-              id="projectTitle"
-              type="text"
-              value={form.projectTitle}
-              onChange={(e) => updateField("projectTitle", e.target.value)}
+              id="teamSize"
+              type="number"
+              min="1"
+              value={form.projectPreferences}
+              onChange={(e) =>
+                updateField("projectPreferences", e.target.value)
+              }
               className="w-full rounded-md border px-3 py-2"
-              placeholder="e.g., AI Research Dashboard"
+              placeholder="e.g., 4"
               required
             />
           </div>
 
-          {/* Budget */}
+          {/* Skills */}
           <div className="space-y-2">
-            <label className="block font-medium" htmlFor="budget">
-              Estimated Budget
+            <label className="block font-medium" htmlFor="skills">
+              Skills & Technologies
             </label>
             <input
-              id="budget"
+              id="skills"
               type="text"
-              value={form.budget}
-              onChange={(e) => updateField("budget", e.target.value)}
+              value={form.skills}
+              onChange={(e) => updateField("skills", e.target.value)}
               className="w-full rounded-md border px-3 py-2"
-              placeholder="e.g., $25,000"
+              placeholder="e.g., React, Node.js, Figma, Python"
+              required
+            />
+          </div>
+
+          {/* Project Preferences */}
+          <div className="space-y-2">
+            <label className="block font-medium" htmlFor="projectPreferences">
+              Project Preferences
+            </label>
+            <input
+              id="projectPreferences"
+              type="text"
+              value={form.projectPreferences}
+              onChange={(e) => updateField("teamSize", e.target.value)}
+              className="w-full rounded-md border px-3 py-2"
+              placeholder="e.g., Web apps, AI/ML tools, non-profit work"
               required
             />
           </div>
@@ -90,14 +115,14 @@ export default function TeamApplicationPage() {
           {/* Description */}
           <div className="space-y-2">
             <label className="block font-medium" htmlFor="description">
-              Project Description
+              About Your Team
             </label>
             <textarea
               id="description"
               value={form.description}
               onChange={(e) => updateField("description", e.target.value)}
               className="w-full rounded-md border px-3 py-2"
-              placeholder="Outline your project objectives and deliverables"
+              placeholder="Tell us about your team's background, experience, and what you're looking to work on"
               rows={5}
               required
             />
