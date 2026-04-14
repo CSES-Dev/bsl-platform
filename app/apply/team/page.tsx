@@ -49,6 +49,30 @@ export default function TeamApplicationPage() {
           <p className="mt-2 text-gray-600">Tell us about your team!</p>
 
           <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+            {/* Submitter Name */}
+            <div className="space-y-2">
+              <Label htmlFor="submitterName">Your Name</Label>
+              <Input
+                id="submitterName"
+                type="text"
+                value={form.submitterName}
+                onChange={(e) => updateField("submitterName", e.target.value)}
+                placeholder="Your full name"
+                required
+              />
+            </div>
+            {/* Submitter Email */}
+            <div className="space-y-2">
+              <Label htmlFor="submitterEmail">Your Email</Label>
+              <Input
+                id="submitterEmail"
+                type="email"
+                value={form.submitterEmail}
+                onChange={(e) => updateField("submitterEmail", e.target.value)}
+                placeholder="you@example.com"
+                required
+              />
+            </div>
             {/* Team Name */}
             <div className="space-y-2">
               <Label htmlFor="teamName">Team Name</Label>
@@ -61,7 +85,6 @@ export default function TeamApplicationPage() {
                 required
               />
             </div>
-
             {/* Team Size */}
             <div className="space-y-2">
               <Label htmlFor="teamSize">Team Size</Label>
@@ -75,7 +98,6 @@ export default function TeamApplicationPage() {
                 required
               />
             </div>
-
             {/* Skills */}
             <div className="space-y-2">
               <Label htmlFor="skills">Skills & Technologies</Label>
@@ -88,7 +110,6 @@ export default function TeamApplicationPage() {
                 required
               />
             </div>
-
             {/* Project Preferences */}
             <div className="space-y-2">
               <Label htmlFor="projectPreferences">Project Preferences</Label>
@@ -103,7 +124,6 @@ export default function TeamApplicationPage() {
                 required
               />
             </div>
-
             {/* Description */}
             <div className="space-y-2">
               <Label htmlFor="description">About Your Team</Label>
@@ -116,7 +136,6 @@ export default function TeamApplicationPage() {
                 required
               />
             </div>
-
             <div className="flex justify-center pt-4">
               <Button type="submit">Apply</Button>
             </div>
