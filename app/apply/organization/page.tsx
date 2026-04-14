@@ -4,6 +4,9 @@ import { useState } from "react";
 import PublicLayout from "@/components/layout/PublicLayout";
 
 type ProjectFormState = {
+  submitterName: string;
+  submitterEmail: string;
+  skillsNeeded: string;
   companyName: string;
   projectTitle: string;
   budget: string;
@@ -12,6 +15,9 @@ type ProjectFormState = {
 
 export default function CompanyProjectPage() {
   const [form, setForm] = useState<ProjectFormState>({
+    submitterEmail: "",
+    submitterName: "",
+    skillsNeeded: "",
     companyName: "",
     projectTitle: "",
     budget: "",
@@ -44,6 +50,36 @@ export default function CompanyProjectPage() {
         </header>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="flex flex-col gap-2">
+            <label htmlFor="submitterName" className="text-sm font-semibold">
+              Submitter Name
+            </label>
+            <input
+              id="submitterName"
+              type="text"
+              required
+              value={form.submitterName}
+              onChange={(e) => updateField("submitterName", e.target.value)}
+              className="rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              placeholder="Your name"
+            />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label htmlFor="submitterEmail" className="text-sm font-semibold">
+              Submitter Email
+            </label>
+            <input
+              id="submitterEmail"
+              type="text"
+              required
+              value={form.submitterEmail}
+              onChange={(e) => updateField("submitterEmail", e.target.value)}
+              className="rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              placeholder="Your email"
+            />
+          </div>
+
           {/* Company Name Field */}
           <div className="flex flex-col gap-2">
             <label htmlFor="companyName" className="text-sm font-semibold">
@@ -60,22 +96,20 @@ export default function CompanyProjectPage() {
             />
           </div>
 
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            {/* Project Title Field */}
-            <div className="flex flex-col gap-2">
-              <label htmlFor="projectTitle" className="text-sm font-semibold">
-                Project Title
-              </label>
-              <input
-                id="projectTitle"
-                type="text"
-                required
-                value={form.projectTitle}
-                onChange={(e) => updateField("projectTitle", e.target.value)}
-                className="rounded-md border border-gray-300 px-3 py-2"
-                placeholder="Internal CRM Redesign"
-              />
-            </div>
+          {/* Project Title Field */}
+          <div className="flex flex-col gap-2">
+            <label htmlFor="projectTitle" className="text-sm font-semibold">
+              Project Title
+            </label>
+            <input
+              id="projectTitle"
+              type="text"
+              required
+              value={form.projectTitle}
+              onChange={(e) => updateField("projectTitle", e.target.value)}
+              className="rounded-md border border-gray-300 px-3 py-2"
+              placeholder="Internal CRM Redesign"
+            />
           </div>
 
           {/* Budget Field */}
@@ -109,6 +143,19 @@ export default function CompanyProjectPage() {
               placeholder="Outline the main objectives and deliverables..."
             />
           </div>
+
+          {/* Skills / Expertise Needed */}
+          {/* <div className="flex flex-col gap-2">
+            <Label htmlFor="skillsNeeded">Skills / Expertise Needed</Label>
+            <Input
+              id="skillsNeeded"
+              type="text"
+              required
+              value={form.skillsNeeded}
+              onChange={(e) => updateField("skillsNeeded", e.target.value)}
+              placeholder="e.g. React, Node.js, UI/UX Design"
+            />
+          </div> */}
 
           {/* Form Actions */}
           <div className="pt-4">
