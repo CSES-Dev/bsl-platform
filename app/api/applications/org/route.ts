@@ -1,18 +1,31 @@
 export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    const { companyName, projectTitle, budget, description } = body;
+    const {
+      companyName,
+      projectTitle,
+      budget,
+      description,
+      submitterName,
+      submitterEmail,
+      skillsNeeded,
+    } = body;
 
     // Server validation
-    if (!companyName || !projectTitle || !budget || !description) {
+    if (
+      !companyName ||
+      !projectTitle ||
+      !budget ||
+      !description ||
+      !submitterName ||
+      !submitterEmail
+    ) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 },
@@ -30,16 +43,17 @@ export async function POST(request: Request) {
 
     const application = await prisma.application.create({
       data: {
-        type: "ORG",
-        status: "PENDING",
+        type: "org",
+        status: "pending",
 
-        submitterName: companyName,
-        submitterEmail: "N/A", // must be non-null, can change later
+        submitterName: submitterName,
+        submitterEmail: submitterEmail,
 
         payload: {
           companyName,
           projectTitle,
           budget: parsedBudget,
+          skillsNeeded,
           description,
         },
       },
