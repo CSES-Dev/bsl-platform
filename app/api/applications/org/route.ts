@@ -24,7 +24,8 @@ export async function POST(request: Request) {
       !budget ||
       !description ||
       !submitterName ||
-      !submitterEmail
+      !submitterEmail ||
+      !skillsNeeded
     ) {
       return NextResponse.json(
         { error: "Missing required fields" },
