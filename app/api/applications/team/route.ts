@@ -1,28 +1,33 @@
 export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { teamName, projectTitle, budget, description } = body;
+    const {
+      teamName,
+      skills,
+      teamSize,
+      projectPreferences,
+      description,
+      submitterName,
+      submitterEmail,
+    } = body;
 
     // Server-side validation
-    if (!teamName || !projectTitle || !budget || !description) {
+    if (
+      !teamName ||
+      !skills ||
+      !teamSize ||
+      !projectPreferences ||
+      !description ||
+      !submitterName ||
+      !submitterEmail
+    ) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 },
-      );
-    }
-
-    // Parse budget to number
-    const parsedBudget = Number(String(budget).replace(/[^0-9.-]+/g, ""));
-    if (isNaN(parsedBudget)) {
-      return NextResponse.json(
-        { error: "Budget must be a valid number" },
         { status: 400 },
       );
     }
@@ -30,14 +35,15 @@ export async function POST(request: Request) {
     // Create application in DB
     const application = await prisma.application.create({
       data: {
-        type: "TEAM",
-        status: "PENDING",
-        submitterName: teamName,
-        submitterEmail: "N/A", // placeholder, can be updated later
+        type: "team",
+        status: "pending",
+        submitterName: submitterName,
+        submitterEmail: submitterEmail,
         payload: {
           teamName,
-          projectTitle,
-          budget: parsedBudget,
+          skills,
+          teamSize: Number(teamSize),
+          projectPreferences,
           description,
         },
       },
