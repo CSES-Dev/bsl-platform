@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import AdminLayout from "@/components/admin/AdminLayout";
+import { hasRole } from "@/lib/rbac";
 
 type Event = {
   id: string;
@@ -14,6 +16,9 @@ type Event = {
 };
 
 export default function AdminEventsPage() {
+  const { data: session } = useSession();
+  const canCreate = hasRole(session?.user?.role ?? "USER", "AMBASSADOR");
+
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -21,11 +26,14 @@ export default function AdminEventsPage() {
   const [startAt, setStartAt] = useState("");
   const [location, setLocation] = useState("");
 
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState<{
+    text: string;
+    isError: boolean;
+  } | null>(null);
 
   async function loadEvents() {
     setLoading(true);
-    setMessage("");
+    setMessage(null);
 
     try {
       const res = await fetch("/api/admin/events");
@@ -33,15 +41,20 @@ export default function AdminEventsPage() {
 
       if (!res.ok) {
         setEvents([]);
-        setMessage(data?.error || "Failed to load events");
+        setMessage({
+          text: data?.error || "Failed to load events",
+          isError: true,
+        });
         return;
       }
 
-      // Ensure events is always an array
       setEvents(Array.isArray(data) ? data : []);
     } catch {
       setEvents([]);
-      setMessage("Failed to load events");
+      setMessage({
+        text: "Failed to load events",
+        isError: true,
+      });
     } finally {
       setLoading(false);
     }
@@ -53,7 +66,7 @@ export default function AdminEventsPage() {
 
   async function createEvent(e: React.FormEvent) {
     e.preventDefault();
-    setMessage("");
+    setMessage(null);
 
     try {
       const res = await fetch("/api/admin/events", {
@@ -67,11 +80,17 @@ export default function AdminEventsPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setMessage(data?.error || "Failed to create event");
+        setMessage({
+          text: data?.error || "Failed to create event",
+          isError: true,
+        });
         return;
       }
 
-      setMessage("Event created successfully");
+      setMessage({
+        text: "Event created successfully",
+        isError: false,
+      });
 
       setTitle("");
       setStartAt("");
@@ -79,7 +98,10 @@ export default function AdminEventsPage() {
 
       loadEvents();
     } catch {
-      setMessage("Failed to create event");
+      setMessage({
+        text: "Failed to create event",
+        isError: true,
+      });
     }
   }
 
@@ -87,52 +109,62 @@ export default function AdminEventsPage() {
     <AdminLayout>
       <h1 className="text-2xl font-semibold">Admin Events</h1>
 
-      {/* Create Event Form */}
-      <form onSubmit={createEvent} className="mt-6 space-y-4 max-w-md">
-        <div>
-          <label className="block text-sm font-medium">Title</label>
-          <input
-            className="w-full border rounded px-3 py-2"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-          />
-        </div>
+      {canCreate && (
+        <form onSubmit={createEvent} className="mt-6 max-w-md space-y-4">
+          <div>
+            <label className="block text-sm font-medium">Title</label>
+            <input
+              className="w-full rounded border px-3 py-2"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+            />
+          </div>
 
-        <div>
-          <label className="block text-sm font-medium">Start Time</label>
-          <input
-            type="datetime-local"
-            className="w-full border rounded px-3 py-2"
-            value={startAt}
-            onChange={(e) => setStartAt(e.target.value)}
-            required
-          />
-        </div>
+          <div>
+            <label className="block text-sm font-medium">Start Time</label>
+            <input
+              type="datetime-local"
+              className="w-full rounded border px-3 py-2"
+              value={startAt}
+              onChange={(e) => setStartAt(e.target.value)}
+              required
+            />
+          </div>
 
-        <div>
-          <label className="block text-sm font-medium">Location</label>
-          <input
-            className="w-full border rounded px-3 py-2"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-          />
-        </div>
+          <div>
+            <label className="block text-sm font-medium">Location</label>
+            <input
+              className="w-full rounded border px-3 py-2"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+            />
+          </div>
 
-        <button className="border px-4 py-2 rounded hover:bg-gray-50">
-          Create Event
-        </button>
+          <button className="rounded border px-4 py-2 hover:bg-gray-50">
+            Create Event
+          </button>
+        </form>
+      )}
 
-        {message && (
-          <p className="text-sm mt-2 text-red-600">
-            {message}
-          </p>
-        )}
-      </form>
+      {!canCreate && (
+        <p className="mt-6 text-sm text-gray-500">
+          You do not have permission to create events.
+        </p>
+      )}
 
-      {/* Events Table */}
+      {message && (
+        <p
+          className={`mt-2 text-sm ${
+            message.isError ? "text-red-600" : "text-green-600"
+          }`}
+        >
+          {message.text}
+        </p>
+      )}
+
       <div className="mt-10">
-        <h2 className="text-lg font-semibold mb-4">Events</h2>
+        <h2 className="mb-4 text-lg font-semibold">Events</h2>
 
         {loading ? (
           <p>Loading...</p>
@@ -142,20 +174,20 @@ export default function AdminEventsPage() {
           <table className="w-full border">
             <thead className="bg-gray-50">
               <tr>
-                <th className="text-left p-2 border">Title</th>
-                <th className="text-left p-2 border">Start</th>
-                <th className="text-left p-2 border">Location</th>
+                <th className="border p-2 text-left">Title</th>
+                <th className="border p-2 text-left">Start</th>
+                <th className="border p-2 text-left">Location</th>
               </tr>
             </thead>
 
             <tbody>
               {events.map((event) => (
                 <tr key={event.id}>
-                  <td className="p-2 border">{event.title}</td>
-                  <td className="p-2 border">
+                  <td className="border p-2">{event.title}</td>
+                  <td className="border p-2">
                     {new Date(event.startAt).toLocaleString()}
                   </td>
-                  <td className="p-2 border">{event.location || "-"}</td>
+                  <td className="border p-2">{event.location || "-"}</td>
                 </tr>
               ))}
             </tbody>
