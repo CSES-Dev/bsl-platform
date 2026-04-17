@@ -1,11 +1,12 @@
+import ProfileDropdown from "@/components/admin/ProfileDropdown";
+
 export default function AdminPage() {
-    return (
-      <div>
-        <h1 className="text-2xl font-semibold">Admin Dashboard</h1>
-        <p className="mt-2 text-gray-600">
-          Base admin layout shell is working & No auth yet.
-        </p>
+  return (
+    <div>
+      <div className="flex items-center justify-between border-b border-gray-100 pb-6">
+        <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
+        <ProfileDropdown />
       </div>
-    );
-  }
-  
+    </div>
+  );
+}
