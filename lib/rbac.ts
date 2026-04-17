@@ -1,10 +1,17 @@
-export function hasRole(userRole: string, requiredRole: string) {
-    const roleHierarchy: Record<string, number> = {
-      USER: 0,
-      REVIEWER: 1,
-      AMBASSADOR: 2,
-      SUPER_ADMIN: 3,
-    };
-  
-    return roleHierarchy[userRole] >= roleHierarchy[requiredRole];
-  }
+export const ROLES = ["USER", "AMBASSADOR", "REVIEWER", "SUPER_ADMIN"] as const;
+export type Role = (typeof ROLES)[number];
+
+export function hasRole(
+  userRole: Role | undefined,
+  requiredRole: Role
+): boolean {
+  if (!userRole) return false;
+  return ROLES.indexOf(userRole) >= ROLES.indexOf(requiredRole);
+}
+
+export function requiredRoleForAdminPath(pathname: string): Role {
+  if (pathname === "/admin" || pathname.startsWith("/admin/events"))
+    return "AMBASSADOR";
+  if (pathname.startsWith("/admin/applications")) return "REVIEWER";
+  return "SUPER_ADMIN";
+}
