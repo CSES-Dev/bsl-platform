@@ -50,6 +50,7 @@ export async function GET() {
   }
 }
 
+// POST /api/admin/events (create)
 export async function POST(req: Request) {
   const gate = await requireAmbassadorOrHigher();
 
