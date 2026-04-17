@@ -66,9 +66,59 @@ export async function POST(req: Request) {
       { status: 400 }
     );
   }
+}
 
-  const startAt = new Date(body.startAt);
-  const endAt = body.endAt ? new Date(body.endAt) : null;
+export async function POST(req: Request) {
+  try {
+    // TODO: require admin (RBAC)
+    const body = await req.json();
+
+    if (!body.title || !body.startAt || !body.createdByUserId) {
+      return NextResponse.json(
+        { error: "title, startAt, createdByUserId are required" },
+        { status: 400 }
+      );
+    }
+
+    const startAt = new Date(body.startAt);
+    const endAt = body.endAt ? new Date(body.endAt) : null;
+
+    if (Number.isNaN(startAt.getTime())) {
+      return NextResponse.json(
+        { error: "Invalid startAt" },
+        { status: 400 }
+      );
+    }
+
+    if (endAt && Number.isNaN(endAt.getTime())) {
+      return NextResponse.json(
+        { error: "Invalid endAt" },
+        { status: 400 }
+      );
+    }
+
+    if (endAt && endAt < startAt) {
+      return NextResponse.json(
+        { error: "endAt cannot be before startAt" },
+        { status: 400 }
+      );
+    }
+
+    const created = await prisma.event.create({
+      data: {
+        title: body.title,
+        description: body.description ?? null,
+        startAt,
+        endAt,
+        location: body.location ?? null,
+        link: body.link ?? null,
+        createdByUserId: body.createdByUserId, // later: get from session
+      },
+    });
+
+    return NextResponse.json(created, { status: 201 });
+  } catch (err) {
+    console.error("[POST /api/events]", err);
 
   if (Number.isNaN(startAt.getTime())) {
     return NextResponse.json({ error: "Invalid startAt" }, { status: 400 });
@@ -80,8 +130,8 @@ export async function POST(req: Request) {
 
   if (endAt && endAt < startAt) {
     return NextResponse.json(
-      { error: "endAt cannot be before startAt" },
-      { status: 400 }
+      { error: "Failed to create event" },
+      { status: 500 }
     );
   }
 
