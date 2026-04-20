@@ -1,25 +1,16 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@/generated/prisma/client";
+import { requireRole } from "@/lib/apiAuth";
 
-export async function GET() {
+export async function GET(request: Request) {
+  const gate = await requireRole("REVIEWER");
+
+  if (!gate.ok) {
+    return NextResponse.json({ error: gate.error }, { status: gate.status });
+  }
+
   try {
-    const session = await auth();
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const dbUser = await prisma.user.findUnique({
-      where: { email: session.user.email },
-      select: { role: true },
-    });
-
-    if (
-      !dbUser ||
-      (dbUser.role !== Role.REVIEWER && dbUser.role !== Role.SUPER_ADMIN)
-    ) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
-
     const { searchParams } = new URL(request.url);
     const type = searchParams.get("type");
     const status = searchParams.get("status");
@@ -47,7 +38,7 @@ export async function GET() {
     console.error(err);
     return NextResponse.json(
       { error: "Failed to get applications" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
