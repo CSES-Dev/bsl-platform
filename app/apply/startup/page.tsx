@@ -45,7 +45,9 @@ export default function StartupApplyPage() {
           StartupName : form.name,
           StartupDescription : form.description,
           StartupFundingGoal : form.fundingGoal,
-          StartupContact : form.contact,
+          StartupDeckUrl : form.deckUrl,
+          StartupFundingSiteUrl : form.fundingSiteUrl,
+          StartupContact : { email: form.contact, name: form.name },
         }),
       });
       if (!res.ok) {
@@ -55,7 +57,9 @@ export default function StartupApplyPage() {
       setForm({
         name: "",
         description: "",
+        deckUrl: "",
         fundingGoal: "",
+        fundingSiteUrl: "",
         contact: "",
        });
     } catch (err) {
@@ -75,6 +79,17 @@ export default function StartupApplyPage() {
         </p>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+          {status === "success" && (
+            <div className="rounded-md bg-green-50 p-4 text-sm text-green-700">
+              Application submitted successfully!
+            </div>
+          )}
+          {status === "error" && (
+            <div className="rounded-md bg-red-50 p-4 text-sm text-red-700">
+              Failed to submit application. Please try again.
+            </div>
+          )}
+          
           <div className="space-y-2">
             <Label htmlFor="name">Startup name</Label>
             <Input
@@ -147,7 +162,7 @@ export default function StartupApplyPage() {
           </div>
 
           <div className="flex justify-center pt-4">
-            <Button type="submit">Apply</Button>
+            <Button type="submit" disabled={loading}>Apply</Button>
           </div>
         </form>
       </div>
