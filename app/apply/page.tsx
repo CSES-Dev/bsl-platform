@@ -27,18 +27,29 @@ export default function StrategicLeadersPage() {
         </p>
       </div>
 
-      <div className="relative z-10 flex flex-col sm:flex-row gap-6 mt-10 w-full max-w-4xl justify-center">
-        {cards.map((card) => (
-          <a
-            key={card.id}
-            href={card.href}
-            className="flex-1 min-h-96 bg-sky-100 rounded-3xl flex items-start justify-start p-6 hover:bg-sky-200 hover:shadow-md transition-all duration-200 group"
-          >
-            <span className="text-black font-bold text-lg uppercase tracking-wide leading-snug whitespace-pre-line group-hover:text-cyan-700 transition-colors">
-              {card.label}
-            </span>
-          </a>
-        ))}
+        <section className="mt-10">
+          <h2 className="text-2xl font-semibold mb-3">Application Types</h2>
+          <div className="flex flex-col gap-4">
+            <Link
+              href="/apply/startup"
+              className="underline text-gray-700 hover:text-black"
+            >
+              Startup Application
+            </Link>
+            <Link
+              href="/apply/organization"
+              className="underline text-gray-700 hover:text-black"
+            >
+              Org Application
+            </Link>
+            <Link
+              href="/apply/team"
+              className="underline text-gray-700 hover:text-black"
+            >
+              Team Application
+            </Link>
+          </div>
+        </section>
       </div>
     </div>
   );
