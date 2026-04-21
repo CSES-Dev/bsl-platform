@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import LeaderCard2 from '@/components/ui/LeaderCard2';
 import PublicLayout from '@/components/layout/PublicLayout';
 
@@ -53,16 +54,16 @@ const team = [
   },
 ];
 
-export default function Leaders() {
+export default function LeadersPage() {
   return (
     <PublicLayout>
-    <div style={{
-      minHeight: '100vh',
-      backgroundColor: '#ffffff',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-      padding: '60px 20px',
-    }}>
-      <div style={{ maxWidth: '860px', margin: '0 auto' }}>
+      <div style={{
+        minHeight: '100vh',
+        backgroundColor: '#ffffff',
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+        padding: '60px 20px',
+      }}>
+        <div style={{ maxWidth: '860px', margin: '0 auto' }}>
 
         {/* Header */}
         <header style={{ textAlign: 'center', marginBottom: '70px' }}>
@@ -115,12 +116,12 @@ export default function Leaders() {
           <p style={{ fontSize: '18px', margin: '0 0 28px 0', color: '#444' }}>
             Join hundreds of successful startups in our program
           </p>
-          <a
-  href="/apply"
+          <Link
+  href="/apply/team"
   className="inline-block px-12 py-4 bg-black text-white font-semibold border-2 border-black hover:bg-white hover:text-black transition-colors duration-200"
 >
   Apply Now
-</a>
+</Link>
         </section>
 
         {/* Contact Section */}
@@ -136,7 +137,9 @@ export default function Leaders() {
               <a
   href={link.href}
   className="text-black no-underline text-lg border-b-2 border-transparent hover:border-black transition-colors duration-200"
-></a>
+>
+  {link.label}
+</a>
             ))}
           </div>
         </section>
