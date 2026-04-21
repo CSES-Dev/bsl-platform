@@ -162,7 +162,7 @@ export default function StartupApplyPage() {
           </div>
 
           <div className="flex justify-center pt-4">
-            <Button type="submit" disabled={loading}>Apply</Button>
+            <Button type="submit" disabled={loading}>{loading ? "Submitting..." : "Apply"}</Button>
           </div>
         </form>
       </div>
