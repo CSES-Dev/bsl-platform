@@ -25,14 +25,49 @@ export default function StartupApplyPage() {
     fundingSiteUrl: "",
     contact: "",
   });
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
 
   function updateField<K extends keyof StartupFormState>(key: K, value: StartupFormState[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    console.log("Startup application form:", form);
+    setLoading(true);
+    setStatus("idle");
+
+    try {
+      const res = await fetch("/api/applications/startup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          StartupName : form.name,
+          StartupDescription : form.description,
+          StartupFundingGoal : form.fundingGoal,
+          StartupDeckUrl : form.deckUrl,
+          StartupFundingSiteUrl : form.fundingSiteUrl,
+          StartupContact : { email: form.contact, name: form.name },
+        }),
+      });
+      if (!res.ok) {
+        throw new Error("Failed to submit application");
+      }
+      setStatus("success");
+      setForm({
+        name: "",
+        description: "",
+        deckUrl: "",
+        fundingGoal: "",
+        fundingSiteUrl: "",
+        contact: "",
+       });
+    } catch (err) {
+      console.error(err);
+      setStatus("error");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -44,6 +79,17 @@ export default function StartupApplyPage() {
         </p>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+          {status === "success" && (
+            <div className="rounded-md bg-green-50 p-4 text-sm text-green-700">
+              Application submitted successfully!
+            </div>
+          )}
+          {status === "error" && (
+            <div className="rounded-md bg-red-50 p-4 text-sm text-red-700">
+              Failed to submit application. Please try again.
+            </div>
+          )}
+          
           <div className="space-y-2">
             <Label htmlFor="name">Startup name</Label>
             <Input
@@ -116,7 +162,7 @@ export default function StartupApplyPage() {
           </div>
 
           <div className="flex justify-center pt-4">
-            <Button type="submit">Apply</Button>
+            <Button type="submit" disabled={loading}>{loading ? "Submitting..." : "Apply"}</Button>
           </div>
         </form>
       </div>
