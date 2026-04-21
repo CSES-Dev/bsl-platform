@@ -1,5 +1,7 @@
 import React from 'react';
+import Link from 'next/link';
 import LeaderCard2 from '@/components/ui/LeaderCard2';
+import PublicLayout from '@/components/layout/PublicLayout';
 
 const team = [
   {
@@ -30,37 +32,38 @@ const team = [
     name: "Alex Thompson",
     title: "Operations Manager",
     bio: "Scaled operations at Uber. Former consultant at McKinsey.",
-    image: "https://ui-avatars.com/api/?name=Alex+Thompson&size=400&background=e5e5e5&color=000&bold=true",
+    image: "men.jpg",
   },
   {
     name: "Maria Garcia",
     title: "Venture Partner",
     bio: "15 years in venture capital. Board member at multiple unicorns.",
-    image: "https://ui-avatars.com/api/?name=Maria+Garcia&size=400&background=e5e5e5&color=000&bold=true",
+    image: "woman.jpg",
   },
   {
     name: "Ryan Mitchell",
     title: "Community Lead",
     bio: "Built communities at Reddit. Former developer relations at GitHub.",
-    image: "https://ui-avatars.com/api/?name=Ryan+Mitchell&size=400&background=e5e5e5&color=000&bold=true",
+    image: "men.jpg",
   },
   {
     name: "Sharad Aggarwal",
     title: "VC",
     bio: "Global head of AI Strategy at Google Cloud.",
-    image: "https://ui-avatars.com/api/?name=Sharad+Aggarwal&size=400&background=e5e5e5&color=000&bold=true",
+    image: "men.jpg",
   },
 ];
 
-export default function Leaders() {
+export default function LeadersPage() {
   return (
-    <div style={{
-      minHeight: '100vh',
-      backgroundColor: '#ffffff',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-      padding: '60px 20px',
-    }}>
-      <div style={{ maxWidth: '860px', margin: '0 auto' }}>
+    <PublicLayout>
+      <div style={{
+        minHeight: '100vh',
+        backgroundColor: '#ffffff',
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+        padding: '60px 20px',
+      }}>
+        <div style={{ maxWidth: '860px', margin: '0 auto' }}>
 
         {/* Header */}
         <header style={{ textAlign: 'center', marginBottom: '70px' }}>
@@ -113,25 +116,12 @@ export default function Leaders() {
           <p style={{ fontSize: '18px', margin: '0 0 28px 0', color: '#444' }}>
             Join hundreds of successful startups in our program
           </p>
-          <a
-            href="/apply"
-            style={{
-              display: 'inline-block',
-              padding: '16px 48px',
-              backgroundColor: '#000',
-              color: '#fff',
-              textDecoration: 'none',
-              fontSize: '16px',
-              fontWeight: '600',
-              borderRadius: '8px',
-              border: '2px solid #000',
-              transition: 'all 0.2s ease',
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#fff'; e.currentTarget.style.color = '#000'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#000'; e.currentTarget.style.color = '#fff'; }}
-          >
-            Apply Now
-          </a>
+          <Link
+  href="/apply/team"
+  className="inline-block px-12 py-4 bg-black text-white font-semibold border-2 border-black hover:bg-white hover:text-black transition-colors duration-200"
+>
+  Apply Now
+</Link>
         </section>
 
         {/* Contact Section */}
@@ -144,18 +134,18 @@ export default function Leaders() {
               { label: 'Twitter', href: 'https://twitter.com/yourcompany' },
               { label: 'LinkedIn', href: 'https://linkedin.com/company/yourcompany' },
             ].map((link) => (
-              <a key={link.label} href={link.href}
-                style={{ color: '#000', textDecoration: 'none', fontSize: '17px', borderBottom: '2px solid transparent', transition: 'border-color 0.2s ease' }}
-                onMouseEnter={(e) => e.currentTarget.style.borderBottomColor = '#000'}
-                onMouseLeave={(e) => e.currentTarget.style.borderBottomColor = 'transparent'}
-              >
-                {link.label}
-              </a>
+              <a
+  href={link.href}
+  className="text-black no-underline text-lg border-b-2 border-transparent hover:border-black transition-colors duration-200"
+>
+  {link.label}
+</a>
             ))}
           </div>
         </section>
 
       </div>
     </div>
+    </PublicLayout>
   );
 }

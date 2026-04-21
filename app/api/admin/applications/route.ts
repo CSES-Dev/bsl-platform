@@ -1,9 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
-import { Prisma, Role } from "@/generated/prisma/client";
+import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { auth } from "@/auth";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const session = await auth();
     if (!session?.user?.email) {

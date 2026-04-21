@@ -1,49 +1,27 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { getApplicationById } from "@/services/mockApplications";
+import ApproveRejectButtons from "@/components/admin/ApproveRejectButtons";
 
-const STATUS_STYLES: Record<string, string> = {
-  pending:  "bg-amber-50 text-amber-700 ring-1 ring-amber-200",
-  approved: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200",
-  rejected: "bg-red-50 text-red-600 ring-1 ring-red-200",
+type Props = {
+  params: Promise<{ id: string }>;
 };
 
-interface Application {
-  id: string;
-  type: string;
-  status: string;
-  submitterName: string;
-  submitterEmail: string;
-  payload: Record<string, unknown>;
-  createdAt: string;
-  updatedAt: string;
-}
+export default async function ApplicationDetail({ params }: Props) {
+  const { id } = await params;
+  const app = getApplicationById(id);
 
-export default function ApplicationDetail({ params }: { params: { id: string } }) {
-  const [app, setApp] = useState<Application | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [actioning, setActioning] = useState<"approved" | "rejected" | null>(null);
-  const [actionError, setActionError] = useState<string | null>(null);
-
-  async function handleAction(status: "approved" | "rejected") {
-    setActioning(status);
-    setActionError(null);
-    try {
-      const res = await fetch(`/api/admin/applications/${params.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status }),
-      });
-      if (!res.ok) { const b = await res.json(); throw new Error(b.error ?? "Failed to update"); }
-      const { data } = await res.json();
-      setApp(data);
-    } catch (err: any) {
-      setActionError(err.message);
-    } finally {
-      setActioning(null);
-    }
+  if (!app) {
+    return (
+      <div className="p-6">
+        <h2 className="text-xl font-semibold">Application not found</h2>
+        <p className="mt-2">No mock application matches id {id}.</p>
+        <Link href="/admin/applications" className="text-blue-600 hover:underline mt-4 inline-block">
+          Back to applications
+        </Link>
+      </div>
+    );
   }
 
   useEffect(() => {
@@ -83,14 +61,15 @@ export default function ApplicationDetail({ params }: { params: { id: string } }
   if (!app) return null;
 
   return (
-    <PageShell>
-      {/* Header */}
-      <div className="flex items-start justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-semibold text-gray-900">{app.submitterName}</h1>
-          <p className="text-sm text-gray-500 mt-1">{app.submitterEmail}</p>
+    <div className="p-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-semibold">Application: {app.name}</h1>
+        <div className="flex items-center gap-4">
+          <ApproveRejectButtons id={app.id} />
+          <Link href="/admin/applications" className="text-blue-600 hover:underline">
+            Back
+          </Link>
         </div>
-        <BackLink />
       </div>
 
       <div className="bg-white border border-gray-200 rounded-lg shadow-sm mb-6">

@@ -10,7 +10,9 @@ import { Button } from "@/components/ui/button";
 type StartupFormState = {
   name: string;
   description: string;
+  deckUrl: string;
   fundingGoal: string;
+  fundingSiteUrl: string;
   contact: string;
 };
 
@@ -18,17 +20,54 @@ export default function StartupApplyPage() {
   const [form, setForm] = useState<StartupFormState>({
     name: "",
     description: "",
+    deckUrl: "",
     fundingGoal: "",
+    fundingSiteUrl: "",
     contact: "",
   });
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
 
   function updateField<K extends keyof StartupFormState>(key: K, value: StartupFormState[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    console.log("Startup application form:", form);
+    setLoading(true);
+    setStatus("idle");
+
+    try {
+      const res = await fetch("/api/applications/startup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          StartupName : form.name,
+          StartupDescription : form.description,
+          StartupFundingGoal : form.fundingGoal,
+          StartupDeckUrl : form.deckUrl,
+          StartupFundingSiteUrl : form.fundingSiteUrl,
+          StartupContact : { email: form.contact, name: form.name },
+        }),
+      });
+      if (!res.ok) {
+        throw new Error("Failed to submit application");
+      }
+      setStatus("success");
+      setForm({
+        name: "",
+        description: "",
+        deckUrl: "",
+        fundingGoal: "",
+        fundingSiteUrl: "",
+        contact: "",
+       });
+    } catch (err) {
+      console.error(err);
+      setStatus("error");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -40,6 +79,29 @@ export default function StartupApplyPage() {
         </p>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+          {status === "success" && (
+            <div className="rounded-md bg-green-50 p-4 text-sm text-green-700">
+              Application submitted successfully!
+            </div>
+          )}
+          {status === "error" && (
+            <div className="rounded-md bg-red-50 p-4 text-sm text-red-700">
+              Failed to submit application. Please try again.
+            </div>
+          )}
+          
+          <div className="space-y-2">
+            <Label htmlFor="name">Startup name</Label>
+            <Input
+              id="name"
+              type="text"
+              value={form.name}
+              onChange={(e) => updateField("name", e.target.value)}
+              placeholder="Your startup name"
+              required
+            />
+          </div>
+
           <div className="space-y-2">
             <Label htmlFor="description">Tell us more about your startup!</Label>
             <Textarea
@@ -53,13 +115,13 @@ export default function StartupApplyPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="name">Link to pitch deck</Label>
+            <Label htmlFor="deckUrl">Link to pitch deck</Label>
             <Input
-              id="name"
+              id="deckUrl"
               type="url"
-              value={form.name}
-              onChange={(e) => updateField("name", e.target.value)}
-              placeholder="Loremipsumdolorsitamet.com"
+              value={form.deckUrl}
+              onChange={(e) => updateField("deckUrl", e.target.value)}
+              placeholder="https://example.com/pitch-deck"
               required
             />
           </div>
@@ -77,19 +139,30 @@ export default function StartupApplyPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="contact">Link to external funding site</Label>
+            <Label htmlFor="fundingSiteUrl">Link to external funding site</Label>
+            <Input
+              id="fundingSiteUrl"
+              type="url"
+              value={form.fundingSiteUrl}
+              onChange={(e) => updateField("fundingSiteUrl", e.target.value)}
+              placeholder="https://example.com/funding"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="contact">Contact email</Label>
             <Input
               id="contact"
-              type="url"
+              type="email"
               value={form.contact}
               onChange={(e) => updateField("contact", e.target.value)}
-              placeholder="Loremipsumdolorsitamet.com"
+              placeholder="founder@startup.com"
               required
             />
           </div>
 
           <div className="flex justify-center pt-4">
-            <Button type="submit">Apply</Button>
+            <Button type="submit" disabled={loading}>{loading ? "Submitting..." : "Apply"}</Button>
           </div>
         </form>
       </div>
