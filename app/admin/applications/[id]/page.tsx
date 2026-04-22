@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 
 const STATUS_STYLES: Record<string, string> = {
   pending:  "bg-amber-50 text-amber-700 ring-1 ring-amber-200",
@@ -20,7 +21,10 @@ interface Application {
   updatedAt: string;
 }
 
-export default function ApplicationDetail({ params }: { params: { id: string } }) {
+export default function ApplicationDetail() {
+  const params = useParams<{ id: string }>();
+  const id = params.id;
+
   const [app, setApp] = useState<Application | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -31,7 +35,7 @@ export default function ApplicationDetail({ params }: { params: { id: string } }
     setActioning(status);
     setActionError(null);
     try {
-      const res = await fetch(`/api/admin/applications/${params.id}`, {
+      const res = await fetch(`/api/admin/applications/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status }),
@@ -49,7 +53,7 @@ export default function ApplicationDetail({ params }: { params: { id: string } }
   useEffect(() => {
     async function fetchApp() {
       try {
-        const res = await fetch(`/api/admin/applications/${params.id}`);
+        const res = await fetch(`/api/admin/applications/${id}`);
         if (res.status === 404) { setError("not_found"); return; }
         if (!res.ok) { const b = await res.json(); throw new Error(b.error ?? "Failed to load"); }
         const { data } = await res.json();
@@ -61,7 +65,7 @@ export default function ApplicationDetail({ params }: { params: { id: string } }
       }
     }
     fetchApp();
-  }, [params.id]);
+  }, [id]);
 
   if (loading) return <PageShell><LoadingSkeleton /></PageShell>;
 
