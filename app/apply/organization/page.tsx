@@ -6,8 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { CardContent } from "@/components/ui/card";
 
 type ProjectFormState = {
   submitterName: string;
@@ -88,11 +86,9 @@ export default function CompanyProjectPage() {
 
   return (
     <PublicLayout>
-      <Card className="mx-auto max-w-2xl px-6 py-12">
+      <div className="mx-auto max-w-2xl px-6 py-12">
         <header className="mb-10">
-          <h1 className="text-3xl font-bold text-gray-900">
-            New Company Project
-          </h1>
+          <h1 className="text-3xl font-bold text-gray-900">New Company Project</h1>
           <p className="mt-2 text-gray-600">
             Submit your project proposal for review. All fields are required.
           </p>
@@ -136,12 +132,10 @@ export default function CompanyProjectPage() {
             />
           </div>
 
-          {/* Company Name */}
           <div className="flex flex-col gap-2">
             <Label htmlFor="companyName">Company / Organization Name</Label>
             <Input
               id="companyName"
-              type="text"
               required
               value={form.companyName}
               onChange={(e) => updateField("companyName", e.target.value)}
@@ -149,12 +143,10 @@ export default function CompanyProjectPage() {
             />
           </div>
 
-          {/* Project Title */}
           <div className="flex flex-col gap-2">
             <Label htmlFor="projectTitle">Project Title</Label>
             <Input
               id="projectTitle"
-              type="text"
               required
               value={form.projectTitle}
               onChange={(e) => updateField("projectTitle", e.target.value)}
@@ -162,12 +154,10 @@ export default function CompanyProjectPage() {
             />
           </div>
 
-          {/* Budget */}
           <div className="flex flex-col gap-2">
             <Label htmlFor="budget">Estimated Budget</Label>
             <Input
               id="budget"
-              type="text"
               required
               value={form.budget}
               onChange={(e) => updateField("budget", e.target.value)}
@@ -175,12 +165,10 @@ export default function CompanyProjectPage() {
             />
           </div>
 
-          {/* Skills */}
           <div className="flex flex-col gap-2">
             <Label htmlFor="skillsNeeded">Skills / Expertise Needed</Label>
             <Input
               id="skillsNeeded"
-              type="text"
               required
               value={form.skillsNeeded}
               onChange={(e) => updateField("skillsNeeded", e.target.value)}
@@ -188,7 +176,6 @@ export default function CompanyProjectPage() {
             />
           </div>
 
-          {/* Description */}
           <div className="flex flex-col gap-2">
             <Label htmlFor="description">Project Description</Label>
             <Textarea
@@ -207,7 +194,7 @@ export default function CompanyProjectPage() {
             </Button>
           </div>
         </form>
-      </Card>
+      </div>
     </PublicLayout>
   );
 }
