@@ -1,14 +1,19 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { NextRequest, NextResponse } from "next/server";
 import { Prisma } from "@/generated/prisma/client";
-import { requireRole } from "@/lib/apiAuth";
+import { prisma } from "@/lib/prisma";
+import { auth } from "@/auth";
+import { hasRole } from "@/lib/rbac";
 
-export async function GET(request: Request) {
-  const gate = await requireRole("REVIEWER");
-
-  if (!gate.ok) {
-    return NextResponse.json({ error: gate.error }, { status: gate.status });
-  }
+export async function GET(request: NextRequest) {
+  try {
+    const session = await auth();
+    const role = session?.user?.role;
+    if (!session?.user?.email || !role) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    if (!hasRole(role, "REVIEWER")) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
 
   try {
     const { searchParams } = new URL(request.url);
@@ -36,9 +41,6 @@ export async function GET(request: Request) {
     return NextResponse.json({ data: applications }, { status: 200 });
   } catch (err) {
     console.error(err);
-    return NextResponse.json(
-      { error: "Failed to get applications" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to get applications" }, { status: 500 });
   }
 }
