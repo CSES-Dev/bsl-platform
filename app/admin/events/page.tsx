@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import AdminLayout from "@/components/admin/AdminLayout";
 import { hasRole } from "@/lib/rbac";
 
 type Event = {
@@ -106,7 +105,7 @@ export default function AdminEventsPage() {
   }
 
   return (
-    <AdminLayout>
+    <div>
       <h1 className="text-2xl font-semibold">Admin Events</h1>
 
       {canCreate && (
@@ -194,6 +193,6 @@ export default function AdminEventsPage() {
           </table>
         )}
       </div>
-    </AdminLayout>
+    </div>
   );
 }
