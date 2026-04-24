@@ -18,7 +18,12 @@ const StartupSchema = z.object({
 });
 
 export async function POST(request: Request) {
-  const body = await request.json();
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
   const parsed = StartupSchema.safeParse(body);
 
   if (!parsed.success) {
@@ -52,7 +57,10 @@ export async function POST(request: Request) {
       },
     });
 
-    return NextResponse.json({ data: newStartupApplication }, { status: 200 });
+    return NextResponse.json(
+      { success: true, id: newStartupApplication.id },
+      { status: 201 }
+    );
   } catch (err) {
     console.error(err);
     return NextResponse.json(
