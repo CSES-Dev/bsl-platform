@@ -14,7 +14,7 @@ type TeamFormState = {
   teamName: string;
   skills: string;
   teamSize: string;
-  projectPreferences: string; // kinds of projects they want — e.g. "web apps, AI tools"
+  projectPreferences: string;
   description: string;
 };
 
@@ -29,6 +29,10 @@ export default function TeamApplicationPage() {
     description: "",
   });
 
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
   function updateField<K extends keyof TeamFormState>(
     key: K,
     value: TeamFormState[K],
@@ -36,9 +40,55 @@ export default function TeamApplicationPage() {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    console.log("Team application form:", form);
+
+    setLoading(true);
+    setStatus("idle");
+    setErrorMessage(null);
+
+    try {
+      const res = await fetch("/api/applications/team", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          submitterName: form.submitterName,
+          submitterEmail: form.submitterEmail,
+          teamName: form.teamName,
+          skills: form.skills,
+          teamSize: form.teamSize,
+          projectPreferences: form.projectPreferences,
+          description: form.description,
+        }),
+      });
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => null);
+        throw new Error(body?.error ?? "Failed to submit application");
+      }
+
+      setStatus("success");
+
+      setForm({
+        submitterEmail: "",
+        submitterName: "",
+        teamName: "",
+        skills: "",
+        teamSize: "",
+        projectPreferences: "",
+        description: "",
+      });
+    } catch (err) {
+      console.error(err);
+      setStatus("error");
+      setErrorMessage(
+        err instanceof Error ? err.message : "Something went wrong",
+      );
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -49,6 +99,19 @@ export default function TeamApplicationPage() {
           <p className="mt-2 text-gray-600">Tell us about your team!</p>
 
           <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+            {status === "success" && (
+              <div className="rounded-md bg-green-50 p-4 text-sm text-green-700">
+                Application submitted successfully!
+              </div>
+            )}
+
+            {status === "error" && (
+              <div className="rounded-md bg-red-50 p-4 text-sm text-red-700">
+                {errorMessage ||
+                  "Failed to submit application. Please try again."}
+              </div>
+            )}
+
             {/* Submitter Name */}
             <div className="space-y-2">
               <Label htmlFor="submitterName">Your Name</Label>
@@ -61,6 +124,7 @@ export default function TeamApplicationPage() {
                 required
               />
             </div>
+
             {/* Submitter Email */}
             <div className="space-y-2">
               <Label htmlFor="submitterEmail">Your Email</Label>
@@ -73,6 +137,7 @@ export default function TeamApplicationPage() {
                 required
               />
             </div>
+
             {/* Team Name */}
             <div className="space-y-2">
               <Label htmlFor="teamName">Team Name</Label>
@@ -85,6 +150,7 @@ export default function TeamApplicationPage() {
                 required
               />
             </div>
+
             {/* Team Size */}
             <div className="space-y-2">
               <Label htmlFor="teamSize">Team Size</Label>
@@ -98,6 +164,7 @@ export default function TeamApplicationPage() {
                 required
               />
             </div>
+
             {/* Skills */}
             <div className="space-y-2">
               <Label htmlFor="skills">Skills & Technologies</Label>
@@ -110,6 +177,7 @@ export default function TeamApplicationPage() {
                 required
               />
             </div>
+
             {/* Project Preferences */}
             <div className="space-y-2">
               <Label htmlFor="projectPreferences">Project Preferences</Label>
@@ -124,20 +192,24 @@ export default function TeamApplicationPage() {
                 required
               />
             </div>
+
             {/* Description */}
             <div className="space-y-2">
               <Label htmlFor="description">About Your Team</Label>
               <Textarea
                 id="description"
+                rows={5}
                 value={form.description}
                 onChange={(e) => updateField("description", e.target.value)}
                 placeholder="Tell us about your team's background, experience, and what you're looking to work on"
-                rows={5}
                 required
               />
             </div>
+
             <div className="flex justify-center pt-4">
-              <Button type="submit">Apply</Button>
+              <Button type="submit" disabled={loading}>
+                {loading ? "Submitting..." : "Apply"}
+              </Button>
             </div>
           </form>
         </CardContent>

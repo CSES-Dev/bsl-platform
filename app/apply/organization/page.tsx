@@ -28,13 +28,66 @@ export default function CompanyProjectPage() {
     description: "",
   });
 
-  function updateField<K extends keyof ProjectFormState>(key: K, value: string) {
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  function updateField<K extends keyof ProjectFormState>(
+    key: K,
+    value: string,
+  ) {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    console.log("Submitting Company Project:", form);
+
+    setLoading(true);
+    setStatus("idle");
+    setErrorMessage(null);
+
+    try {
+      const res = await fetch("/api/applications/org", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          companyName: form.companyName,
+          projectTitle: form.projectTitle,
+          budget: form.budget,
+          description: form.description,
+          submitterName: form.submitterName,
+          submitterEmail: form.submitterEmail,
+          skillsNeeded: form.skillsNeeded,
+        }),
+      });
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => null);
+        throw new Error(body?.error ?? "Failed to submit application");
+      }
+
+      setStatus("success");
+
+      setForm({
+        submitterEmail: "",
+        submitterName: "",
+        skillsNeeded: "",
+        companyName: "",
+        projectTitle: "",
+        budget: "",
+        description: "",
+      });
+    } catch (err) {
+      console.error(err);
+      setStatus("error");
+      setErrorMessage(
+        err instanceof Error ? err.message : "Something went wrong",
+      );
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -48,6 +101,20 @@ export default function CompanyProjectPage() {
         </header>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          {status === "success" && (
+            <div className="rounded-md bg-green-50 p-4 text-sm text-green-700">
+              Application submitted successfully!
+            </div>
+          )}
+
+          {status === "error" && (
+            <div className="rounded-md bg-red-50 p-4 text-sm text-red-700">
+              {errorMessage ||
+                "Failed to submit application. Please try again."}
+            </div>
+          )}
+
+          {/* Submitter Name */}
           <div className="flex flex-col gap-2">
             <Label htmlFor="submitterName">Submitter Name</Label>
             <Input
@@ -59,6 +126,7 @@ export default function CompanyProjectPage() {
             />
           </div>
 
+          {/* Submitter Email */}
           <div className="flex flex-col gap-2">
             <Label htmlFor="submitterEmail">Submitter Email</Label>
             <Input
@@ -128,7 +196,9 @@ export default function CompanyProjectPage() {
           </div>
 
           <div className="flex justify-center pt-4">
-            <Button type="submit">Apply</Button>
+            <Button type="submit" disabled={loading}>
+              {loading ? "Submitting..." : "Apply"}
+            </Button>
           </div>
         </form>
       </div>
