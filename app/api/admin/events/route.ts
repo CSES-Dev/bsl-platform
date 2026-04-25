@@ -1,35 +1,9 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { auth } from "@/auth";
-import { hasRole } from "@/lib/rbac";
-
-async function requireAmbassadorOrHigher() {
-  const session = await auth();
-  const email = session?.user?.email;
-  const role = session?.user?.role;
-
-  if (!email || !role) {
-    return { ok: false as const, status: 401 as const, error: "Unauthorized" };
-  }
-
-  if (!hasRole(role, "AMBASSADOR")) {
-    return { ok: false as const, status: 403 as const, error: "Forbidden" };
-  }
-
-  const user = await prisma.user.findUnique({
-    where: { email },
-    select: { id: true },
-  });
-
-  if (!user) {
-    return { ok: false as const, status: 401 as const, error: "Unauthorized" };
-  }
-
-  return { ok: true as const, user };
-}
+import { requireRole } from "@/lib/apiAuth";
 
 export async function GET() {
-  const gate = await requireAmbassadorOrHigher();
+  const gate = await requireRole("AMBASSADOR");
 
   if (!gate.ok) {
     return NextResponse.json({ error: gate.error }, { status: gate.status });
@@ -50,32 +24,19 @@ export async function GET() {
   }
 }
 
-// POST /api/admin/events (create)
 export async function POST(req: Request) {
-  const gate = await requireAmbassadorOrHigher();
+  const gate = await requireRole("AMBASSADOR");
 
   if (!gate.ok) {
     return NextResponse.json({ error: gate.error }, { status: gate.status });
   }
 
-  const body = await req.json();
-
-  if (!body.title || !body.startAt) {
-    return NextResponse.json(
-      { error: "title and startAt are required" },
-      { status: 400 }
-    );
-  }
-}
-
-export async function POST(req: Request) {
   try {
-    // TODO: require admin (RBAC)
     const body = await req.json();
 
-    if (!body.title || !body.startAt || !body.createdByUserId) {
+    if (!body.title || !body.startAt) {
       return NextResponse.json(
-        { error: "title, startAt, createdByUserId are required" },
+        { error: "title and startAt are required" },
         { status: 400 }
       );
     }
@@ -84,17 +45,11 @@ export async function POST(req: Request) {
     const endAt = body.endAt ? new Date(body.endAt) : null;
 
     if (Number.isNaN(startAt.getTime())) {
-      return NextResponse.json(
-        { error: "Invalid startAt" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Invalid startAt" }, { status: 400 });
     }
 
     if (endAt && Number.isNaN(endAt.getTime())) {
-      return NextResponse.json(
-        { error: "Invalid endAt" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Invalid endAt" }, { status: 400 });
     }
 
     if (endAt && endAt < startAt) {
@@ -104,38 +59,6 @@ export async function POST(req: Request) {
       );
     }
 
-    const created = await prisma.event.create({
-      data: {
-        title: body.title,
-        description: body.description ?? null,
-        startAt,
-        endAt,
-        location: body.location ?? null,
-        link: body.link ?? null,
-        createdByUserId: body.createdByUserId, // later: get from session
-      },
-    });
-
-    return NextResponse.json(created, { status: 201 });
-  } catch (err) {
-    console.error("[POST /api/events]", err);
-
-  if (Number.isNaN(startAt.getTime())) {
-    return NextResponse.json({ error: "Invalid startAt" }, { status: 400 });
-  }
-
-  if (endAt && Number.isNaN(endAt.getTime())) {
-    return NextResponse.json({ error: "Invalid endAt" }, { status: 400 });
-  }
-
-  if (endAt && endAt < startAt) {
-    return NextResponse.json(
-      { error: "Failed to create event" },
-      { status: 500 }
-    );
-  }
-
-  try {
     const created = await prisma.event.create({
       data: {
         title: body.title,
