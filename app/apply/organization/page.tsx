@@ -30,6 +30,7 @@ export default function CompanyProjectPage() {
 
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   function updateField<K extends keyof ProjectFormState>(
     key: K,
@@ -43,6 +44,7 @@ export default function CompanyProjectPage() {
 
     setLoading(true);
     setStatus("idle");
+    setErrorMessage(null);
 
     try {
       const res = await fetch("/api/applications/org", {
@@ -62,7 +64,8 @@ export default function CompanyProjectPage() {
       });
 
       if (!res.ok) {
-        throw new Error("Failed to submit application");
+        const body = await res.json().catch(() => null);
+        throw new Error(body?.error ?? "Failed to submit application");
       }
 
       setStatus("success");
@@ -79,6 +82,9 @@ export default function CompanyProjectPage() {
     } catch (err) {
       console.error(err);
       setStatus("error");
+      setErrorMessage(
+        err instanceof Error ? err.message : "Something went wrong",
+      );
     } finally {
       setLoading(false);
     }
@@ -103,7 +109,8 @@ export default function CompanyProjectPage() {
 
           {status === "error" && (
             <div className="rounded-md bg-red-50 p-4 text-sm text-red-700">
-              Failed to submit application. Please try again.
+              {errorMessage ||
+                "Failed to submit application. Please try again."}
             </div>
           )}
 

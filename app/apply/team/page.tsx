@@ -31,6 +31,7 @@ export default function TeamApplicationPage() {
 
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   function updateField<K extends keyof TeamFormState>(
     key: K,
@@ -44,6 +45,7 @@ export default function TeamApplicationPage() {
 
     setLoading(true);
     setStatus("idle");
+    setErrorMessage(null);
 
     try {
       const res = await fetch("/api/applications/team", {
@@ -63,7 +65,8 @@ export default function TeamApplicationPage() {
       });
 
       if (!res.ok) {
-        throw new Error("Failed to submit application");
+        const body = await res.json().catch(() => null);
+        throw new Error(body?.error ?? "Failed to submit application");
       }
 
       setStatus("success");
@@ -80,6 +83,9 @@ export default function TeamApplicationPage() {
     } catch (err) {
       console.error(err);
       setStatus("error");
+      setErrorMessage(
+        err instanceof Error ? err.message : "Something went wrong",
+      );
     } finally {
       setLoading(false);
     }
@@ -101,7 +107,8 @@ export default function TeamApplicationPage() {
 
             {status === "error" && (
               <div className="rounded-md bg-red-50 p-4 text-sm text-red-700">
-                Failed to submit application. Please try again.
+                {errorMessage ||
+                  "Failed to submit application. Please try again."}
               </div>
             )}
 
