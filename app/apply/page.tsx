@@ -4,14 +4,13 @@ import PublicLayout from "@/components/layout/PublicLayout";
 const cards = [
   { id: "startup", label: "STARTUP\nAPPLICATION", href: "/apply/startup" },
   { id: "org", label: "ORG/COMPANY\nPROJECT FORM", href: "/apply/organization" },
-  { id: "student", label: "STUDENT/PRODUCT\nTEAM SKILLS FORM", href: "/apply/team" },
+  { id: "team", label: "STUDENT/PRODUCT\nTEAM SKILLS FORM", href: "/apply/team" },
 ];
 
 export default function ApplyPage() {
   return (
     <PublicLayout>
       <div className="relative min-h-screen bg-white overflow-hidden flex flex-col items-center px-6 py-16">
-
         <div className="absolute top-0 left-0 w-64 h-64 bg-rose-100 rounded-full -translate-x-1/3 -translate-y-1/4 opacity-70" />
         <div className="absolute bottom-0 right-0 w-56 h-56 bg-rose-100 rounded-full translate-x-1/4 translate-y-1/4 opacity-70" />
 

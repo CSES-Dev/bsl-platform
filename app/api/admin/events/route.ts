@@ -34,7 +34,7 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    if (!body.title?.trim() || !body.startAt) {
+    if (!body.title || !body.startAt) {
       return NextResponse.json(
         { error: "title and startAt are required" },
         { status: 400 }
@@ -65,8 +65,8 @@ export async function POST(req: Request) {
         description: body.description?.trim() || null,
         startAt,
         endAt,
-        location: body.location?.trim() || null,
-        link: body.link?.trim() || null,
+        location: body.location ?? null,
+        link: body.link ?? null,
         createdByUserId: gate.user.id,
       },
     });
