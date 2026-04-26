@@ -25,7 +25,7 @@ export default function Footer() {
           {/* Navigation Links */}
           <div className="flex flex-col gap-3">
             <h4 className="text-sm font-semibold text-gray-900">Navigation</h4>
-            <nav className="flex flex-col gap-2">
+            <nav className="flex flex-row flex-wrap gap-4">
               {navigationLinks.map((link) => (
                 <Link
                   key={link.href}
