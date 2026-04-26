@@ -34,7 +34,7 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    if (!body.title || !body.startAt) {
+    if (!body.title?.trim() || !body.startAt) {
       return NextResponse.json(
         { error: "title and startAt are required" },
         { status: 400 }
@@ -61,12 +61,12 @@ export async function POST(req: Request) {
 
     const created = await prisma.event.create({
       data: {
-        title: body.title,
-        description: body.description ?? null,
+        title: body.title.trim(),
+        description: body.description?.trim() || null,
         startAt,
         endAt,
-        location: body.location ?? null,
-        link: body.link ?? null,
+        location: body.location?.trim() || null,
+        link: body.link?.trim() || null,
         createdByUserId: gate.user.id,
       },
     });
