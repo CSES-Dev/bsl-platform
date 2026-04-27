@@ -32,6 +32,7 @@ export default function AdminEventsPage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -136,9 +137,9 @@ export default function AdminEventsPage() {
     const confirmed = window.confirm(
       "Are you sure you want to delete this event?"
     );
-
     if (!confirmed) return;
 
+    setDeletingId(id);
     setMessage(null);
 
     try {
@@ -156,17 +157,19 @@ export default function AdminEventsPage() {
         return;
       }
 
-      setEvents((prev) => prev.filter((event) => event.id !== id));
-
       setMessage({
         text: "Event deleted successfully",
         isError: false,
       });
+
+      await loadEvents();
     } catch {
       setMessage({
         text: "Failed to delete event",
         isError: true,
       });
+    } finally {
+      setDeletingId(null);
     }
   }
 
@@ -229,6 +232,7 @@ export default function AdminEventsPage() {
                       type="datetime-local"
                       value={endAt}
                       onChange={(e) => setEndAt(e.target.value)}
+                      min={startAt}
                     />
                   </div>
 
@@ -342,13 +346,18 @@ export default function AdminEventsPage() {
                         </td>
 
                         <td className="px-4 py-3">
-                          <button
-                            type="button"
-                            onClick={() => deleteEvent(event.id)}
-                            className="rounded-md border border-red-200 px-3 py-1 text-sm text-red-600 hover:bg-red-50"
-                          >
-                            Delete
-                          </button>
+                          {canCreate && (
+                            <button
+                              type="button"
+                              onClick={() => deleteEvent(event.id)}
+                              disabled={deletingId === event.id}
+                              className="rounded-md border border-red-200 px-3 py-1 text-sm text-red-600 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+                            >
+                              {deletingId === event.id
+                                ? "Deleting..."
+                                : "Delete"}
+                            </button>
+                          )}
                         </td>
                       </tr>
                     ))}
