@@ -5,6 +5,16 @@ import { useSession } from "next-auth/react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { hasRole } from "@/lib/rbac";
 
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
 type Event = {
   id: string;
   title: string;
@@ -21,10 +31,15 @@ export default function AdminEventsPage() {
 
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [startAt, setStartAt] = useState("");
+  const [endAt, setEndAt] = useState("");
   const [location, setLocation] = useState("");
+  const [link, setLink] = useState("");
 
   const [message, setMessage] = useState<{
     text: string;
@@ -67,6 +82,7 @@ export default function AdminEventsPage() {
   async function createEvent(e: React.FormEvent) {
     e.preventDefault();
     setMessage(null);
+    setSaving(true);
 
     try {
       const res = await fetch("/api/admin/events", {
@@ -74,7 +90,14 @@ export default function AdminEventsPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ title, startAt, location }),
+        body: JSON.stringify({
+          title,
+          description: description || null,
+          startAt,
+          endAt: endAt || null,
+          location: location || null,
+          link: link || null,
+        }),
       });
 
       const data = await res.json();
@@ -93,106 +116,257 @@ export default function AdminEventsPage() {
       });
 
       setTitle("");
+      setDescription("");
       setStartAt("");
+      setEndAt("");
       setLocation("");
+      setLink("");
 
-      loadEvents();
+      await loadEvents();
     } catch {
       setMessage({
         text: "Failed to create event",
         isError: true,
       });
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function deleteEvent(id: string) {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this event?"
+    );
+    if (!confirmed) return;
+
+    setDeletingId(id);
+    setMessage(null);
+
+    try {
+      const res = await fetch(`/api/admin/events/${id}`, {
+        method: "DELETE",
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setMessage({
+          text: data?.error || "Failed to delete event",
+          isError: true,
+        });
+        return;
+      }
+
+      setMessage({
+        text: "Event deleted successfully",
+        isError: false,
+      });
+
+      await loadEvents();
+    } catch {
+      setMessage({
+        text: "Failed to delete event",
+        isError: true,
+      });
+    } finally {
+      setDeletingId(null);
     }
   }
 
   return (
     <AdminLayout>
-      <h1 className="text-2xl font-semibold">Admin Events</h1>
+      <div className="space-y-8">
+        <div>
+          <h1 className="text-2xl font-semibold">Admin Events</h1>
+          <p className="mt-1 text-sm text-gray-500">
+            Create, review, and delete events shown on the public events page.
+          </p>
+        </div>
 
-      {canCreate && (
-        <form onSubmit={createEvent} className="mt-6 max-w-md space-y-4">
-          <div>
-            <label className="block text-sm font-medium">Title</label>
-            <input
-              className="w-full rounded border px-3 py-2"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium">Start Time</label>
-            <input
-              type="datetime-local"
-              className="w-full rounded border px-3 py-2"
-              value={startAt}
-              onChange={(e) => setStartAt(e.target.value)}
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium">Location</label>
-            <input
-              className="w-full rounded border px-3 py-2"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-            />
-          </div>
-
-          <button className="rounded border px-4 py-2 hover:bg-gray-50">
-            Create Event
-          </button>
-        </form>
-      )}
-
-      {!canCreate && (
-        <p className="mt-6 text-sm text-gray-500">
-          You do not have permission to create events.
-        </p>
-      )}
-
-      {message && (
-        <p
-          className={`mt-2 text-sm ${
-            message.isError ? "text-red-600" : "text-green-600"
-          }`}
-        >
-          {message.text}
-        </p>
-      )}
-
-      <div className="mt-10">
-        <h2 className="mb-4 text-lg font-semibold">Events</h2>
-
-        {loading ? (
-          <p>Loading...</p>
-        ) : events.length === 0 ? (
-          <p>No events yet.</p>
-        ) : (
-          <table className="w-full border">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="border p-2 text-left">Title</th>
-                <th className="border p-2 text-left">Start</th>
-                <th className="border p-2 text-left">Location</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {events.map((event) => (
-                <tr key={event.id}>
-                  <td className="border p-2">{event.title}</td>
-                  <td className="border p-2">
-                    {new Date(event.startAt).toLocaleString()}
-                  </td>
-                  <td className="border p-2">{event.location || "-"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        {message && (
+          <p
+            className={`rounded-md border px-4 py-3 text-sm ${
+              message.isError
+                ? "border-red-200 bg-red-50 text-red-700"
+                : "border-green-200 bg-green-50 text-green-700"
+            }`}
+          >
+            {message.text}
+          </p>
         )}
+
+        {canCreate ? (
+          <Card>
+            <CardHeader>
+              <CardTitle>Create Event</CardTitle>
+            </CardHeader>
+
+            <CardContent>
+              <form onSubmit={createEvent} className="space-y-4">
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="title">Title *</Label>
+                    <Input
+                      id="title"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="startAt">Start Time *</Label>
+                    <Input
+                      id="startAt"
+                      type="datetime-local"
+                      value={startAt}
+                      onChange={(e) => setStartAt(e.target.value)}
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="endAt">End Time</Label>
+                    <Input
+                      id="endAt"
+                      type="datetime-local"
+                      value={endAt}
+                      onChange={(e) => setEndAt(e.target.value)}
+                      min={startAt}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="location">Location</Label>
+                    <Input
+                      id="location"
+                      value={location}
+                      onChange={(e) => setLocation(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="space-y-2 md:col-span-2">
+                    <Label htmlFor="link">Link</Label>
+                    <Input
+                      id="link"
+                      type="url"
+                      value={link}
+                      onChange={(e) => setLink(e.target.value)}
+                      placeholder="https://example.com"
+                    />
+                  </div>
+
+                  <div className="space-y-2 md:col-span-2">
+                    <Label htmlFor="description">Description</Label>
+                    <Textarea
+                      id="description"
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="rounded-md border px-4 py-2 text-sm font-medium hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {saving ? "Creating..." : "Create Event"}
+                </button>
+              </form>
+            </CardContent>
+          </Card>
+        ) : (
+          <p className="text-sm text-gray-500">
+            You do not have permission to create events.
+          </p>
+        )}
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Events</CardTitle>
+          </CardHeader>
+
+          <CardContent>
+            {loading ? (
+              <p className="text-sm text-gray-500">Loading events...</p>
+            ) : events.length === 0 ? (
+              <p className="text-sm text-gray-500">No events yet.</p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm">
+                  <thead className="border-b bg-gray-50 text-gray-600">
+                    <tr>
+                      <th className="px-4 py-3 font-medium">Title</th>
+                      <th className="px-4 py-3 font-medium">Start</th>
+                      <th className="px-4 py-3 font-medium">End</th>
+                      <th className="px-4 py-3 font-medium">Location</th>
+                      <th className="px-4 py-3 font-medium">Link</th>
+                      <th className="px-4 py-3 font-medium">Actions</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {events.map((event) => (
+                      <tr key={event.id} className="border-b last:border-0">
+                        <td className="px-4 py-3 font-medium">
+                          <div>{event.title}</div>
+                          {event.description && (
+                            <p className="mt-1 max-w-md text-xs text-gray-500">
+                              {event.description}
+                            </p>
+                          )}
+                        </td>
+
+                        <td className="px-4 py-3">
+                          {new Date(event.startAt).toLocaleString()}
+                        </td>
+
+                        <td className="px-4 py-3">
+                          {event.endAt
+                            ? new Date(event.endAt).toLocaleString()
+                            : "—"}
+                        </td>
+
+                        <td className="px-4 py-3">{event.location || "—"}</td>
+
+                        <td className="px-4 py-3">
+                          {event.link ? (
+                            <a
+                              href={event.link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:underline"
+                            >
+                              Open
+                            </a>
+                          ) : (
+                            "—"
+                          )}
+                        </td>
+
+                        <td className="px-4 py-3">
+                          {canCreate && (
+                            <button
+                              type="button"
+                              onClick={() => deleteEvent(event.id)}
+                              disabled={deletingId === event.id}
+                              className="rounded-md border border-red-200 px-3 py-1 text-sm text-red-600 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+                            >
+                              {deletingId === event.id
+                                ? "Deleting..."
+                                : "Delete"}
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </AdminLayout>
   );

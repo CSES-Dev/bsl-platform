@@ -61,8 +61,8 @@ export async function POST(req: Request) {
 
     const created = await prisma.event.create({
       data: {
-        title: body.title,
-        description: body.description ?? null,
+        title: body.title.trim(),
+        description: body.description?.trim() || null,
         startAt,
         endAt,
         location: body.location ?? null,
