@@ -3,6 +3,7 @@ import Link from 'next/link';
 import LeaderCard2 from '@/components/ui/LeaderCard2';
 import PublicLayout from '@/components/layout/PublicLayout';
 
+
 const team = [
   {
     name: "Sarah Johnson",
@@ -89,7 +90,7 @@ export default function LeadersPage() {
         </header>
 
         {/* Team Cards */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '40px', marginBottom: '80px' }}>
+        <div className="mb-20 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
           {team.map((member, index) => (
             <LeaderCard2
               key={member.name}
@@ -97,7 +98,6 @@ export default function LeadersPage() {
               title={member.title}
               bio={member.bio}
               image={member.image}
-              reverse={index % 2 === 1}
             />
           ))}
         </div>
