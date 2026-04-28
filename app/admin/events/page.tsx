@@ -25,13 +25,14 @@ export default function AdminEventsPage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [startAt, setStartAt] = useState("");
   const [endAt, setEndAt] = useState("");
   const [location, setLocation] = useState("");
   const [link, setLink] = useState("");
-  const [description, setDescription] = useState("");
 
   const [message, setMessage] = useState<{
     text: string;
@@ -80,7 +81,14 @@ export default function AdminEventsPage() {
       const res = await fetch("/api/admin/events", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, startAt, endAt, location, link, description }),
+        body: JSON.stringify({
+          title,
+          description: description || null,
+          startAt,
+          endAt: endAt || null,
+          location: location || null,
+          link: link || null,
+        }),
       });
 
       const data = await res.json();
@@ -95,16 +103,50 @@ export default function AdminEventsPage() {
 
       setMessage({ text: "Event created successfully", isError: false });
       setTitle("");
+      setDescription("");
       setStartAt("");
       setEndAt("");
       setLocation("");
       setLink("");
-      setDescription("");
-      loadEvents();
+
+      await loadEvents();
     } catch {
       setMessage({ text: "Failed to create event", isError: true });
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function deleteEvent(id: string) {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this event?"
+    );
+    if (!confirmed) return;
+
+    setDeletingId(id);
+    setMessage(null);
+
+    try {
+      const res = await fetch(`/api/admin/events/${id}`, {
+        method: "DELETE",
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setMessage({
+          text: data?.error || "Failed to delete event",
+          isError: true,
+        });
+        return;
+      }
+
+      setMessage({ text: "Event deleted successfully", isError: false });
+      await loadEvents();
+    } catch {
+      setMessage({ text: "Failed to delete event", isError: true });
+    } finally {
+      setDeletingId(null);
     }
   }
 
@@ -215,36 +257,82 @@ export default function AdminEventsPage() {
         </p>
       )}
 
-      <div>
-        <h2 className="mb-4 text-lg font-semibold">Events</h2>
-
-        {loading ? (
-          <p>Loading...</p>
-        ) : events.length === 0 ? (
-          <p>No events yet.</p>
-        ) : (
-          <table className="w-full border">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="border p-2 text-left">Title</th>
-                <th className="border p-2 text-left">Start</th>
-                <th className="border p-2 text-left">Location</th>
-              </tr>
-            </thead>
-            <tbody>
-              {events.map((event) => (
-                <tr key={event.id}>
-                  <td className="border p-2">{event.title}</td>
-                  <td className="border p-2">
-                    {new Date(event.startAt).toLocaleString()}
-                  </td>
-                  <td className="border p-2">{event.location || "-"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Events</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {loading ? (
+            <p className="text-sm text-gray-500">Loading events...</p>
+          ) : events.length === 0 ? (
+            <p className="text-sm text-gray-500">No events yet.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead className="border-b bg-gray-50 text-gray-600">
+                  <tr>
+                    <th className="px-4 py-3 font-medium">Title</th>
+                    <th className="px-4 py-3 font-medium">Start</th>
+                    <th className="px-4 py-3 font-medium">End</th>
+                    <th className="px-4 py-3 font-medium">Location</th>
+                    <th className="px-4 py-3 font-medium">Link</th>
+                    <th className="px-4 py-3 font-medium">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {events.map((event) => (
+                    <tr key={event.id} className="border-b last:border-0">
+                      <td className="px-4 py-3 font-medium">
+                        <div>{event.title}</div>
+                        {event.description && (
+                          <p className="mt-1 max-w-md text-xs text-gray-500">
+                            {event.description}
+                          </p>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        {new Date(event.startAt).toLocaleString()}
+                      </td>
+                      <td className="px-4 py-3">
+                        {event.endAt
+                          ? new Date(event.endAt).toLocaleString()
+                          : "—"}
+                      </td>
+                      <td className="px-4 py-3">{event.location || "—"}</td>
+                      <td className="px-4 py-3">
+                        {event.link ? (
+                          <a
+                            href={event.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:underline"
+                          >
+                            Open
+                          </a>
+                        ) : (
+                          "—"
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        {canCreate && (
+                          <button
+                            type="button"
+                            onClick={() => deleteEvent(event.id)}
+                            disabled={deletingId === event.id}
+                            className="rounded-md border border-red-200 px-3 py-1 text-sm text-red-600 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+                          >
+                            {deletingId === event.id ? "Deleting..." : "Delete"}
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }
