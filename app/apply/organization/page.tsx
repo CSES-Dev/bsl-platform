@@ -6,8 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { CardContent } from "@/components/ui/card";
 
 type ProjectFormState = {
   submitterName: string;
@@ -30,6 +28,10 @@ export default function CompanyProjectPage() {
     description: "",
   });
 
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
   function updateField<K extends keyof ProjectFormState>(
     key: K,
     value: string,
@@ -37,24 +39,82 @@ export default function CompanyProjectPage() {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    console.log("Submitting Company Project:", form);
+
+    setLoading(true);
+    setStatus("idle");
+    setErrorMessage(null);
+
+    try {
+      const res = await fetch("/api/applications/org", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          companyName: form.companyName,
+          projectTitle: form.projectTitle,
+          budget: form.budget,
+          description: form.description,
+          submitterName: form.submitterName,
+          submitterEmail: form.submitterEmail,
+          skillsNeeded: form.skillsNeeded,
+        }),
+      });
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => null);
+        throw new Error(body?.error ?? "Failed to submit application");
+      }
+
+      setStatus("success");
+
+      setForm({
+        submitterEmail: "",
+        submitterName: "",
+        skillsNeeded: "",
+        companyName: "",
+        projectTitle: "",
+        budget: "",
+        description: "",
+      });
+    } catch (err) {
+      console.error(err);
+      setStatus("error");
+      setErrorMessage(
+        err instanceof Error ? err.message : "Something went wrong",
+      );
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
     <PublicLayout>
-      <Card className="mx-auto max-w-2xl px-6 py-12">
+      <div className="mx-auto max-w-2xl px-6 py-12">
         <header className="mb-10">
-          <h1 className="text-3xl font-bold text-gray-900">
-            New Company Project
-          </h1>
+          <h1 className="text-3xl font-bold text-gray-900">New Company Project</h1>
           <p className="mt-2 text-gray-600">
             Submit your project proposal for review. All fields are required.
           </p>
         </header>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          {status === "success" && (
+            <div className="rounded-md bg-green-50 p-4 text-sm text-green-700">
+              Application submitted successfully!
+            </div>
+          )}
+
+          {status === "error" && (
+            <div className="rounded-md bg-red-50 p-4 text-sm text-red-700">
+              {errorMessage ||
+                "Failed to submit application. Please try again."}
+            </div>
+          )}
+
+          {/* Submitter Name */}
           <div className="flex flex-col gap-2">
             <Label htmlFor="submitterName">Submitter Name</Label>
             <Input
@@ -66,11 +126,12 @@ export default function CompanyProjectPage() {
             />
           </div>
 
+          {/* Submitter Email */}
           <div className="flex flex-col gap-2">
             <Label htmlFor="submitterEmail">Submitter Email</Label>
             <Input
               id="submitterEmail"
-              type="text"
+              type="email"
               required
               value={form.submitterEmail}
               onChange={(e) => updateField("submitterEmail", e.target.value)}
@@ -78,12 +139,10 @@ export default function CompanyProjectPage() {
             />
           </div>
 
-          {/* Company Name Field */}
           <div className="flex flex-col gap-2">
             <Label htmlFor="companyName">Company / Organization Name</Label>
             <Input
               id="companyName"
-              type="text"
               required
               value={form.companyName}
               onChange={(e) => updateField("companyName", e.target.value)}
@@ -91,12 +150,10 @@ export default function CompanyProjectPage() {
             />
           </div>
 
-          {/* Project Title Field */}
           <div className="flex flex-col gap-2">
             <Label htmlFor="projectTitle">Project Title</Label>
             <Input
               id="projectTitle"
-              type="text"
               required
               value={form.projectTitle}
               onChange={(e) => updateField("projectTitle", e.target.value)}
@@ -104,12 +161,10 @@ export default function CompanyProjectPage() {
             />
           </div>
 
-          {/* Budget Field */}
           <div className="flex flex-col gap-2">
             <Label htmlFor="budget">Estimated Budget</Label>
             <Input
               id="budget"
-              type="text"
               required
               value={form.budget}
               onChange={(e) => updateField("budget", e.target.value)}
@@ -117,12 +172,10 @@ export default function CompanyProjectPage() {
             />
           </div>
 
-          {/* Skills / Expertise Needed */}
           <div className="flex flex-col gap-2">
             <Label htmlFor="skillsNeeded">Skills / Expertise Needed</Label>
             <Input
               id="skillsNeeded"
-              type="text"
               required
               value={form.skillsNeeded}
               onChange={(e) => updateField("skillsNeeded", e.target.value)}
@@ -130,7 +183,6 @@ export default function CompanyProjectPage() {
             />
           </div>
 
-          {/* Description Field */}
           <div className="flex flex-col gap-2">
             <Label htmlFor="description">Project Description</Label>
             <Textarea
@@ -144,10 +196,12 @@ export default function CompanyProjectPage() {
           </div>
 
           <div className="flex justify-center pt-4">
-            <Button type="submit">Apply</Button>
+            <Button type="submit" disabled={loading}>
+              {loading ? "Submitting..." : "Apply"}
+            </Button>
           </div>
         </form>
-      </Card>
+      </div>
     </PublicLayout>
   );
 }

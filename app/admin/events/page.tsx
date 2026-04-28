@@ -80,7 +80,9 @@ export default function AdminEventsPage() {
     try {
       const res = await fetch("/api/admin/events", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           title,
           description: description || null,
@@ -140,7 +142,7 @@ export default function AdminEventsPage() {
         });
         return;
       }
-
+      
       setMessage({ text: "Event deleted successfully", isError: false });
       await loadEvents();
     } catch {
@@ -336,4 +338,3 @@ export default function AdminEventsPage() {
     </div>
   );
 }
-

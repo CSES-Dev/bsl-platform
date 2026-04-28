@@ -1,6 +1,7 @@
 import React from "react";
 import Navbar from "@/components/Navbar";
 import AuthButton from "@/components/auth/AuthButton";
+import Footer from "@/components/Footer";
 
 export default function PublicLayout({
   children,
@@ -18,9 +19,7 @@ export default function PublicLayout({
 
       <main>{children}</main>
 
-      <footer>
-        <h3>Footer placeholder</h3>
-      </footer>
+      <Footer />
     </>
   );
 }

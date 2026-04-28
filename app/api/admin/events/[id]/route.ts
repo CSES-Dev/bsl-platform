@@ -1,20 +1,26 @@
-// read one + update + delete
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { requireRole } from "@/lib/apiAuth";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
 export async function GET(_: Request, { params }: RouteContext) {
+  const gate = await requireRole("AMBASSADOR");
+  if (!gate.ok)
+    return NextResponse.json({ error: gate.error }, { status: gate.status });
+
   const { id } = await params;
-  // TODO: require admin
   const event = await prisma.event.findUnique({ where: { id } });
   if (!event) return NextResponse.json({ error: "Not found" }, { status: 404 });
   return NextResponse.json(event);
 }
 
 export async function PATCH(req: Request, { params }: RouteContext) {
+  const gate = await requireRole("AMBASSADOR");
+  if (!gate.ok)
+    return NextResponse.json({ error: gate.error }, { status: gate.status });
+
   const { id } = await params;
-  // TODO: require admin
   const body = await req.json();
 
   const data: Record<string, unknown> = {};
@@ -26,14 +32,14 @@ export async function PATCH(req: Request, { params }: RouteContext) {
   if (body.link !== undefined) data.link = body.link ?? null;
 
   if (data.startAt && data.endAt && (data.endAt as Date) < (data.startAt as Date)) {
-    return NextResponse.json({ error: "endAt cannot be before startAt" }, { status: 400 });
+    return NextResponse.json(
+      { error: "endAt cannot be before startAt" },
+      { status: 400 }
+    );
   }
 
   try {
-    const updated = await prisma.event.update({
-      where: { id },
-      data,
-    });
+    const updated = await prisma.event.update({ where: { id }, data });
     return NextResponse.json(updated);
   } catch {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
@@ -41,8 +47,11 @@ export async function PATCH(req: Request, { params }: RouteContext) {
 }
 
 export async function DELETE(_: Request, { params }: RouteContext) {
+  const gate = await requireRole("AMBASSADOR");
+  if (!gate.ok)
+    return NextResponse.json({ error: gate.error }, { status: gate.status });
+
   const { id } = await params;
-  // TODO: require admin
   try {
     await prisma.event.delete({ where: { id } });
     return NextResponse.json({ ok: true });
