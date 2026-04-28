@@ -23,7 +23,10 @@ export default function AdminLayout({
         <div className="text-lg font-semibold mb-6">BSL Admin</div>
         <nav className="flex flex-col gap-1">
           {navItems.map(({ label, href }) => {
-            const active = pathname === href;
+            const active =
+              href === "/admin"
+                ? pathname === "/admin"
+                : pathname.startsWith(href);
             return (
               <Link
                 key={href}

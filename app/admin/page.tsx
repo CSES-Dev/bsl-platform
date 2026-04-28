@@ -3,6 +3,7 @@ import ProfileDropdown from "@/components/admin/ProfileDropdown";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 const stats = [
+  { label: "Total", status: "total", color: "text-gray-900" },
   { label: "Pending", status: "pending", color: "text-amber-600" },
   { label: "Approved", status: "approved", color: "text-emerald-600" },
   { label: "Rejected", status: "rejected", color: "text-red-600" },
@@ -15,7 +16,7 @@ export default async function AdminPage() {
     prisma.application.count({ where: { status: "rejected" } }),
   ]);
 
-  const counts = { pending, approved, rejected };
+  const counts = { total: pending + approved + rejected, pending, approved, rejected };
 
   return (
     <div>
@@ -24,7 +25,7 @@ export default async function AdminPage() {
         <ProfileDropdown />
       </div>
 
-      <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-4">
         {stats.map(({ label, status, color }) => (
           <Card key={status}>
             <CardHeader>
