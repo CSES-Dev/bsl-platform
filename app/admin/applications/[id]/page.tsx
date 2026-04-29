@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import ApproveRejectButtons from "@/components/admin/ApproveRejectButtons";
 
 const STATUS_STYLES: Record<string, string> = {
   pending:  "bg-amber-50 text-amber-700 ring-1 ring-amber-200",
@@ -28,28 +29,6 @@ export default function ApplicationDetail() {
   const [app, setApp] = useState<Application | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [actioning, setActioning] = useState<"approved" | "rejected" | null>(null);
-  const [actionError, setActionError] = useState<string | null>(null);
-
-  async function handleAction(status: "approved" | "rejected") {
-    setActioning(status);
-    setActionError(null);
-    try {
-      const res = await fetch(`/api/admin/applications/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status }),
-      });
-      if (!res.ok) { const b = await res.json(); throw new Error(b.error ?? "Failed to update"); }
-      const { data } = await res.json();
-      setApp(data);
-    } catch (err: any) {
-      setActionError(err.message);
-    } finally {
-      setActioning(null);
-    }
-  }
-
   useEffect(() => {
     async function fetchApp() {
       try {
@@ -140,26 +119,8 @@ export default function ApplicationDetail() {
         <div className="px-5 py-4 border-b border-gray-100">
           <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Actions</h2>
         </div>
-        <div className="px-5 py-4 space-y-3">
-          {actionError && (
-            <div className="rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">{actionError}</div>
-          )}
-          <div className="flex gap-3">
-            <button
-              onClick={() => handleAction("approved")}
-              disabled={!!actioning || app.status === "approved"}
-              className="px-4 py-2 rounded-md text-sm font-medium bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200 hover:bg-emerald-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {actioning === "approved" ? "Approving…" : "Approve"}
-            </button>
-            <button
-              onClick={() => handleAction("rejected")}
-              disabled={!!actioning || app.status === "rejected"}
-              className="px-4 py-2 rounded-md text-sm font-medium bg-red-50 text-red-600 ring-1 ring-red-200 hover:bg-red-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {actioning === "rejected" ? "Rejecting…" : "Reject"}
-            </button>
-          </div>
+        <div className="px-5 py-4">
+          <ApproveRejectButtons id={app.id} currentStatus={app.status} onSuccess={setApp} />
         </div>
       </div>
     </PageShell>
