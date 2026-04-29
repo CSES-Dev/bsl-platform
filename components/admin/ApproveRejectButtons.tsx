@@ -38,8 +38,8 @@ export default function ApproveRejectButtons({ id, currentStatus, onSuccess }: P
       }
       const { data } = await res.json();
       onSuccess(data);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An unexpected error occurred");
     } finally {
       setActioning(null);
     }
