@@ -10,8 +10,8 @@ const prisma = new PrismaClient();
 const SEED_USERS: { email: string; role: Role; name?: string }[] = [
   // Example entries - replace with actual dev emails:
   { email: "admin@example.com", role: "SUPER_ADMIN", name: "Admin User" },
-  // { email: "reviewer@example.com", role: "REVIEWER", name: "Reviewer User" },
-  // { email: "ambassador@example.com", role: "AMBASSADOR", name: "Ambassador User" },
+  { email: "reviewer@example.com", role: "REVIEWER", name: "Reviewer User" },
+  { email: "ambassador@example.com", role: "AMBASSADOR", name: "Ambassador User" },
 ];
 
 async function main() {
