@@ -9,32 +9,23 @@ interface LeaderCardProps {
   reverse?: boolean;
 }
 
-export default function LeaderCard2({ name, title, bio, image, reverse = false }: LeaderCardProps) {
+export default function LeaderCard2({ name, title, bio, image }: LeaderCardProps) {
   return (
     <div
       style={{
-        display: 'flex',
-        flexDirection: reverse ? 'row-reverse' : 'row',
-        alignItems: 'center',
         backgroundColor: '#d6eef8',
         borderRadius: '16px',
-        overflow: 'visible',
-        position: 'relative',
-        minHeight: '180px',
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
       }}
     >
-      {/* Image — overflows card top/bottom */}
+      {/* Image */}
       <div
         style={{
-          flexShrink: 0,
-          width: '200px',
-          height: '230px',
+          width: '100%',
+          height: '200px',
           position: 'relative',
-          zIndex: 1,
-          marginTop: '-24px',
-          marginBottom: '-24px',
-          marginLeft: reverse ? '20px' : '-10px',
-          marginRight: reverse ? '-10px' : '20px',
         }}
       >
         <Image
@@ -43,20 +34,19 @@ export default function LeaderCard2({ name, title, bio, image, reverse = false }
           fill
           style={{
             objectFit: 'cover',
-            borderRadius: '14px',
           }}
         />
       </div>
 
       {/* Text content */}
-      <div style={{ flex: 1, padding: '28px 32px' }}>
-        <h3 style={{ fontSize: '22px', fontWeight: '700', margin: '0 0 4px 0', color: '#000' }}>
+      <div style={{ padding: '20px 24px' }}>
+        <h3 style={{ fontSize: '20px', fontWeight: '700', margin: '0 0 4px 0', color: '#000' }}>
           {name}
         </h3>
-        <p style={{ fontSize: '15px', fontWeight: '400', margin: '0 0 12px 0', color: '#333' }}>
+        <p style={{ fontSize: '14px', fontWeight: '500', margin: '0 0 10px 0', color: '#555' }}>
           {title}
         </p>
-        <p style={{ fontSize: '14px', lineHeight: '1.6', margin: '0', color: '#333' }}>
+        <p style={{ fontSize: '13px', lineHeight: '1.5', margin: '0', color: '#444' }}>
           {bio}
         </p>
       </div>
