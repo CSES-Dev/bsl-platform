@@ -1,90 +1,151 @@
-import React from "react";
-import PublicLayout from "@/components/layout/PublicLayout";
+"use client";
 
-export default function AboutUs() {
+import { useState } from "react";
+import PublicLayout from "@/components/layout/PublicLayout";
+import { leaders } from "../../data/leaders";
+
+const BLUE = "#38BFE8";
+const LIGHT_BLUE = "#C9F1FB";
+
+export default function AboutPage() {
+  const [activeTab, setActiveTab] = useState<"team" | "map">("team");
+
   return (
     <PublicLayout>
-      <div className="mx-auto max-w-4xl px-6 py-12">
-        <h1 className="text-4xl font-semibold tracking-tight">BIG STRATEGY LABS</h1>
-        <p className="text-gray-700 leading-relaxed mt-3">
-          Empowering the next generation of startups.
-        </p>
+      <main className="mx-auto max-w-6xl px-6 pb-16 pt-16">
+        {/* HERO */}
+        <section className="text-center">
+          <h1 className="mx-auto max-w-[620px] text-left text-[34px] font-bold leading-[1.18] tracking-tight md:text-[36px]">
+            An invite-only hub for innovation,
+            <br />
+            leadership, and strategic growth
+          </h1>
 
-        <section className="mt-10">
-          <h2 className="text-2xl font-semibold mb-3">Our Mission</h2>
-          <p className="text-gray-700 leading-relaxed mb-4">
-            We believe in the power of innovation and the entrepreneurs who drive it forward.
-            Our mission is to identify, support, and accelerate startups that are building the future.
-          </p>
-          <p className="text-gray-700 leading-relaxed">
-            Whether you're at the idea stage or scaling rapidly, we provide the resources,
-            mentorship, and network you need to succeed.
-          </p>
-        </section>
+          {/* TABS */}
+          <div className="relative mx-auto mt-8 flex w-fit items-center justify-center">
+            <div
+              className="absolute left-[14px] right-[14px] top-1/2 h-[12px] -translate-y-1/2 border-y-[3px]"
+              style={{
+                borderColor: BLUE,
+                backgroundColor: LIGHT_BLUE,
+              }}
+            />
 
-        <section className="mt-10">
-          <h2 className="text-2xl font-semibold mb-3">What We Offer</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-4">
-            {[
-              { title: "Funding", desc: "Competitive investment for promising startups" },
-              { title: "Mentorship", desc: "Guidance from industry experts and successful founders" },
-              { title: "Network", desc: "Access to investors, partners, and fellow entrepreneurs" },
-              { title: "Resources", desc: "Tools, workspace, and support to help you grow" },
-            ].map((item) => (
-              <div key={item.title} className="border border-black p-6">
-                <h3 className="text-lg font-semibold mb-1">{item.title}</h3>
-                <p className="text-gray-700 leading-relaxed text-sm">{item.desc}</p>
-              </div>
-            ))}
+            <button
+              type="button"
+              onClick={() => setActiveTab("map")}
+              className="relative z-10 h-[42px] rounded-[6px] border-[3px] bg-white px-7 text-[18px] font-normal tracking-wide"
+              style={{
+                borderColor: BLUE,
+                backgroundColor: activeTab === "map" ? LIGHT_BLUE : "white",
+              }}
+            >
+              MAPPING LEADERS
+            </button>
+
+            <div className="w-14" />
+
+            <button
+              type="button"
+              onClick={() => setActiveTab("team")}
+              className="relative z-10 h-[42px] rounded-[6px] border-[3px] px-7 text-[18px] font-normal tracking-wide"
+              style={{
+                borderColor: BLUE,
+                backgroundColor: activeTab === "team" ? LIGHT_BLUE : "white",
+              }}
+            >
+              MEET THE TEAM
+            </button>
           </div>
         </section>
 
-        <section className="mt-10">
-          <h2 className="text-2xl font-semibold mb-3">How It Works</h2>
-          <div className="border-l-2 border-black pl-8 space-y-8">
-            {[
-              { step: "01", title: "Apply", desc: "Submit your startup application through our platform" },
-              { step: "02", title: "Review", desc: "Our team evaluates your application and potential" },
-              { step: "03", title: "Interview", desc: "Selected founders meet with our team to discuss their vision" },
-              { step: "04", title: "Launch", desc: "Accepted startups join our program and begin their journey" },
-            ].map((item) => (
-              <div key={item.step}>
-                <h3 className="text-lg font-semibold">{item.step} — {item.title}</h3>
-                <p className="text-gray-700 leading-relaxed text-sm mt-1">{item.desc}</p>
-              </div>
-            ))}
-          </div>
-        </section>
+        {/* CONTENT */}
+        <section className="mt-24">
+          {activeTab === "team" && (
+            <div className="space-y-14">
+              {leaders.map((leader, index) => {
+                const isReversed = index % 2 !== 0;
 
-        <section className="mt-10 border-y-2 border-black py-12 text-center">
-          <h2 className="text-2xl font-semibold mb-3">Ready to Build the Future?</h2>
-          <p className="text-gray-700 leading-relaxed mb-6">
-            Join hundreds of successful startups in our program.
-          </p>
-          <a
-            href="/apply"
-            className="inline-block px-10 py-4 bg-black text-white font-semibold hover:bg-white hover:text-black border-2 border-black transition-colors"
-          >
-            Apply Now
-          </a>
-        </section>
+                return (
+                  <div
+                    key={leader.name}
+                    className={`mx-auto grid max-w-[980px] grid-cols-1 items-center gap-8 rounded-[18px] px-8 py-5 md:min-h-[310px] md:px-8 md:py-5 ${
+                      isReversed
+                        ? "md:grid-cols-[1fr_300px]"
+                        : "md:grid-cols-[300px_1fr]"
+                    }`}
+                    style={{ backgroundColor: LIGHT_BLUE }}
+                  >
+                    {/* IMAGE */}
+                    <div
+                      className={`h-[300px] w-full overflow-hidden rounded-[14px] bg-white md:w-[300px] ${
+                        isReversed ? "md:order-2 md:ml-auto" : "md:order-1"
+                      }`}
+                    >
+                      {leader.image ? (
+                        <img
+                          src={leader.image}
+                          alt={leader.name}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <div
+                          className="flex h-full w-full items-center justify-center text-5xl font-bold"
+                          style={{ color: BLUE }}
+                        >
+                          {leader.name
+                            .split(" ")
+                            .map((word) => word[0])
+                            .join("")}
+                        </div>
+                      )}
+                    </div>
 
-        <section className="mt-10 text-center">
-          <h2 className="text-2xl font-semibold mb-3">Get in Touch</h2>
-          <p className="text-gray-700 leading-relaxed mb-6">Have questions? We'd love to hear from you.</p>
-          <div className="flex flex-wrap justify-center gap-8 text-sm">
-            <a href="mailto:hello@yourcompany.com" className="text-black underline-offset-4 hover:underline">
-              hello@yourcompany.com
-            </a>
-            <a href="https://twitter.com/yourcompany" className="text-black underline-offset-4 hover:underline">
-              Twitter
-            </a>
-            <a href="https://linkedin.com/company/yourcompany" className="text-black underline-offset-4 hover:underline">
-              LinkedIn
-            </a>
-          </div>
+                    {/* TEXT */}
+                    <div
+                      className={`flex w-full flex-col justify-center text-center md:text-left ${
+                        isReversed
+                          ? "md:order-1 md:pl-6 md:pr-8"
+                          : "md:order-2 md:pl-8 md:pr-6"
+                      }`}
+                    >
+                      <h3 className="text-[32px] font-semibold leading-none tracking-tight">
+                        {leader.name}
+                      </h3>
+
+                      <p className="mt-6 text-[25px] leading-none text-black">
+                        {leader.title}
+                      </p>
+
+                      <p className="mt-6 max-w-[560px] text-[22px] leading-[1.22] text-black">
+                        {leader.bio}
+                      </p>
+
+                      <a
+                        href={`mailto:${leader.email}`}
+                        className="mx-auto mt-9 inline-flex w-fit items-center justify-center rounded-full border-[3px] px-5 py-1 text-[16px] font-bold leading-none tracking-[0.12em] text-white md:mx-auto"
+                        style={{
+                          backgroundColor: BLUE,
+                          borderColor: "white",
+                          outline: `3px solid ${BLUE}`,
+                        }}
+                      >
+                        CONTACT
+                      </a>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {activeTab === "map" && (
+            <div className="text-center text-gray-500">
+              <p>Map coming soon.</p>
+            </div>
+          )}
         </section>
-      </div>
+      </main>
     </PublicLayout>
   );
 }
