@@ -1,13 +1,22 @@
-// Renders outside the admin sidebar — see BSL-51
 "use client";
 
 import { useSession, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+
+// TODO: confirm stats values and labels
+const STATS = [
+  { value: "2,418", label: "Startups Onboarded" },
+  { value: "$847M", label: "Startups Onboarded" },
+  { value: "326", label: "Startups Onboarded" },
+];
+
+const INPUT_CLASSES =
+  "block w-full rounded-md border border-stone-300 bg-white px-4 py-2.5 text-sm text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-500/30";
+
+const PINK_BUTTON_CLASSES =
+  "w-full rounded-md border border-[#D9A8A8] bg-[#F5C3C399] px-4 py-2.5 text-sm font-medium text-stone-900 transition-colors hover:bg-[#F5C3C3]";
 
 export default function AdminLoginPage() {
   const { data: session, status } = useSession();
@@ -21,160 +30,145 @@ export default function AdminLoginPage() {
 
   if (status === "loading" || status === "authenticated") {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-stone-100">
-        <p className="text-sm uppercase tracking-widest text-stone-500">Loading…</p>
+      <div className="flex min-h-screen items-center justify-center bg-[#EBE0E0]">
+        <p className="text-sm text-stone-700">Loading…</p>
       </div>
     );
   }
 
   return (
     <div className="flex min-h-screen flex-col md:flex-row">
-      {/* Left panel — marketing / branded surface */}
-      <aside className="relative hidden overflow-hidden bg-stone-200 p-12 md:flex md:w-1/2 md:flex-col md:justify-between">
-        {/* Decorative circles */}
+      <aside className="relative hidden overflow-hidden bg-[#E8E8E8] p-12 md:flex md:w-1/2 md:flex-col md:justify-between">
         <div
           aria-hidden
-          className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full border border-stone-300/60"
+          className="pointer-events-none absolute -right-32 -top-32 h-80 w-80 rounded-full bg-[#F5C3C3]/60"
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute -bottom-32 -right-20 h-96 w-96 rounded-full border border-stone-300/60"
+          className="pointer-events-none absolute -bottom-40 -left-32 h-[24rem] w-[24rem] rounded-full bg-[#F5C3C3]/40"
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute bottom-24 left-12 h-40 w-40 rounded-full border border-stone-300/40"
+          className="pointer-events-none absolute right-12 top-1/3 h-32 w-32 rounded-full bg-[#F5C3C3]/50"
         />
 
-        {/* Top: logo + wordmark */}
-        <div className="relative z-10 flex items-center gap-3">
+        <div className="relative z-10">
           <Image
-            src="/bsl-logo.png"
+            src="/bsl-logo-transparent.png"
             alt="Big Strategy Labs"
-            width={48}
-            height={48}
-            className="h-12 w-12 object-contain"
+            width={480}
+            height={320}
+            className="h-28 w-auto object-contain"
             priority
           />
-          <span className="text-lg font-semibold tracking-tight text-stone-900">
-            Big Strategy Labs
-          </span>
         </div>
 
-        {/* Middle: eyebrow + headline + description */}
-        <div className="relative z-10 max-w-md space-y-6">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-stone-500">
+        <div className="relative z-10 max-w-md space-y-5">
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-stone-700">
             Secure Administrative Access
           </p>
           <h1 className="text-4xl font-bold leading-tight text-stone-900">
             Operate the platform that connects capital with conviction.
           </h1>
-          <p className="text-xs uppercase tracking-wider text-stone-600">
+          <p className="text-sm leading-relaxed text-stone-700">
             Manage applications, review pipelines, and coordinate the BSL
             ambassador network from a single, audited workspace.
           </p>
         </div>
 
-        {/* Bottom: stats */}
-        {/* TODO: confirm stats with Sharad */}
         <div className="relative z-10 grid grid-cols-3 gap-6">
-          <div>
-            <p className="text-3xl font-bold text-stone-900">2,418</p>
-            <p className="mt-2 text-[10px] font-semibold uppercase tracking-wider text-stone-500">
-              Startups Onboarded
-            </p>
-          </div>
-          <div>
-            <p className="text-3xl font-bold text-stone-900">$847M</p>
-            <p className="mt-2 text-[10px] font-semibold uppercase tracking-wider text-stone-500">
-              Startups Onboarded
-            </p>
-          </div>
-          <div>
-            <p className="text-3xl font-bold text-stone-900">326</p>
-            <p className="mt-2 text-[10px] font-semibold uppercase tracking-wider text-stone-500">
-              Startups Onboarded
-            </p>
-          </div>
+          {STATS.map((stat) => (
+            <div key={stat.value}>
+              <p className="text-3xl font-bold text-stone-900">{stat.value}</p>
+              <p className="mt-2 text-[10px] font-semibold uppercase tracking-wider text-stone-600">
+                {stat.label}
+              </p>
+            </div>
+          ))}
         </div>
       </aside>
 
-      {/* Right panel — sign-in surface */}
-      <main className="flex w-full flex-1 items-center justify-center bg-stone-100 px-6 py-12 md:w-1/2">
-        <div className="w-full max-w-md space-y-8">
-          <div className="space-y-3 text-center">
+      <main className="flex w-full flex-1 items-center justify-center bg-[#EBE0E0] px-6 py-12 md:w-1/2">
+        <div className="w-full max-w-md space-y-6">
+          <div className="space-y-2 text-left">
             <h2 className="text-3xl font-bold text-stone-900">Admin Sign In</h2>
-            <p className="text-xs uppercase tracking-wider text-stone-500">
-              Use your BSL corporate credentials. All access is logged and
+            <p className="text-sm text-stone-700">
+              Sign in with your authorised account. All access is logged and
               audited.
             </p>
           </div>
 
-          {/* TODO: email/password login is out of scope — fields are visual only */}
-          <form
-            onSubmit={(e) => e.preventDefault()}
-            className="space-y-4"
-          >
+          {/* TODO: implement email/password login — fields are visual only */}
+          <form onSubmit={(e) => e.preventDefault()} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-xs uppercase tracking-wider text-stone-600">
-                Work Email
-              </Label>
-              <Input
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-stone-900"
+              >
+                Email
+              </label>
+              <input
                 id="email"
                 type="email"
-                placeholder="you@bigstrategylabs.com"
+                placeholder="you@example.com"
                 autoComplete="email"
+                className={INPUT_CLASSES}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-xs uppercase tracking-wider text-stone-600">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-stone-900"
+              >
                 Password
-              </Label>
-              <Input
+              </label>
+              <input
                 id="password"
                 type="password"
-                placeholder="••••••••"
+                placeholder="••••••••••••"
                 autoComplete="current-password"
+                className={INPUT_CLASSES}
               />
             </div>
 
-            <label className="flex items-center gap-2 text-xs text-stone-600">
+            <label className="flex items-center gap-2 text-sm text-stone-800">
               <input
                 type="checkbox"
-                className="h-4 w-4 rounded border-stone-300 text-sky-500 focus:ring-sky-400"
+                className="h-4 w-4 rounded border-stone-400"
               />
               Keep me signed in on this device
             </label>
 
-            <Button type="submit" disabled className="w-full">
+            <button
+              type="submit"
+              disabled
+              className={`${PINK_BUTTON_CLASSES} disabled:cursor-not-allowed disabled:border-[#E8B5B5] disabled:bg-white/60 disabled:text-stone-500 disabled:hover:bg-white/60`}
+            >
               Continue
-            </Button>
+            </button>
           </form>
 
-          {/* Divider */}
           <div className="flex items-center gap-4">
-            <div className="h-px flex-1 bg-stone-300" />
-            <span className="text-xs font-semibold uppercase tracking-wider text-stone-400">
+            <div className="h-px flex-1 bg-stone-400/60" />
+            <span className="text-xs font-semibold uppercase tracking-wider text-stone-700">
               or
             </span>
-            <div className="h-px flex-1 bg-stone-300" />
+            <div className="h-px flex-1 bg-stone-400/60" />
           </div>
 
-          {/* Google SSO — replaces the "Continue with SSO" Figma slot */}
-          <Button
+          <button
             type="button"
-            variant="outline"
             onClick={() => signIn("google", { callbackUrl: "/admin" })}
-            className="w-full"
+            className={`${PINK_BUTTON_CLASSES} flex items-center justify-center gap-3`}
           >
-            <Image src="/google.svg" alt="" width={20} height={20} />
+            <Image src="/google.svg" alt="" width={18} height={18} />
             Continue with Google
-          </Button>
+          </button>
 
-          {/* Restricted-system warning */}
-          <div className="rounded-2xl border border-stone-300 bg-stone-50 p-4">
-            <p className="text-[11px] leading-relaxed text-stone-600">
-              This is a restricted system for authorised BSL personnel only.
+          <div className="rounded-lg border border-[#F5C3C3] bg-[#F5C3C399] p-4">
+            <p className="text-xs leading-relaxed text-stone-700">
+              This is a restricted system for authorised personnel only.
               Unauthorised access attempts are logged and may be subject to
               disciplinary or legal action.
             </p>
