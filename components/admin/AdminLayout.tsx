@@ -17,6 +17,10 @@ export default function AdminLayout({
 }) {
   const pathname = usePathname();
 
+  if (pathname === "/admin/login") {
+    return <>{children}</>;
+  }
+
   return (
     <div className="min-h-screen flex">
       <aside className="w-64 border-r p-4">
