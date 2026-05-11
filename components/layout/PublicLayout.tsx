@@ -9,7 +9,7 @@ export default function PublicLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
+    <div className="min-h-screen flex flex-col">
       <header>
         <Navbar />
         <div className="flex items-center gap-4 px-4">
@@ -17,9 +17,9 @@ export default function PublicLayout({
         </div>
       </header>
 
-      <main>{children}</main>
+      <main className="flex-grow">{children}</main>
 
       <Footer />
-    </>
+    </div>
   );
 }
