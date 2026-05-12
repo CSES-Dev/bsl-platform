@@ -16,6 +16,7 @@ type TeamFormState = {
   teamSize: string;
   projectPreferences: string;
   description: string;
+  websiteUrl: string;
 };
 
 export default function TeamApplicationPage() {
@@ -27,6 +28,7 @@ export default function TeamApplicationPage() {
     teamSize: "",
     projectPreferences: "",
     description: "",
+    websiteUrl: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -61,6 +63,7 @@ export default function TeamApplicationPage() {
           teamSize: form.teamSize,
           projectPreferences: form.projectPreferences,
           description: form.description,
+          websiteUrl: form.websiteUrl,
         }),
       });
 
@@ -79,6 +82,7 @@ export default function TeamApplicationPage() {
         teamSize: "",
         projectPreferences: "",
         description: "",
+        websiteUrl: "",
       });
     } catch (err) {
       console.error(err);
@@ -203,6 +207,17 @@ export default function TeamApplicationPage() {
                 onChange={(e) => updateField("description", e.target.value)}
                 placeholder="Tell us about your team's background, experience, and what you're looking to work on"
                 required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="websiteUrl">Website URL</Label>
+              <Input
+                id="websiteUrl"
+                type="url"
+                value={form.websiteUrl}
+                onChange={(e) => updateField("websiteUrl", e.target.value)}
+                placeholder="https://yourteam.com"
               />
             </div>
 

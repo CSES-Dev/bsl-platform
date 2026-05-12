@@ -13,6 +13,7 @@ type StartupFormState = {
   deckUrl: string;
   fundingGoal: string;
   fundingSiteUrl: string;
+  websiteUrl: string;
   contact: string;
 };
 
@@ -23,6 +24,7 @@ export default function StartupApplyPage() {
     deckUrl: "",
     fundingGoal: "",
     fundingSiteUrl: "",
+    websiteUrl: "",
     contact: "",
   });
   const [loading, setLoading] = useState(false);
@@ -47,6 +49,7 @@ export default function StartupApplyPage() {
           StartupFundingGoal : form.fundingGoal,
           StartupDeckUrl : form.deckUrl,
           StartupFundingSiteUrl : form.fundingSiteUrl,
+          StartupWebsiteUrl : form.websiteUrl,
           StartupContact : { email: form.contact, name: form.name },
         }),
       });
@@ -60,6 +63,7 @@ export default function StartupApplyPage() {
         deckUrl: "",
         fundingGoal: "",
         fundingSiteUrl: "",
+        websiteUrl: "",
         contact: "",
        });
     } catch (err) {
@@ -146,6 +150,17 @@ export default function StartupApplyPage() {
               value={form.fundingSiteUrl}
               onChange={(e) => updateField("fundingSiteUrl", e.target.value)}
               placeholder="https://example.com/funding"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="websiteUrl">Website URL</Label>
+            <Input
+              id="websiteUrl"
+              type="url"
+              value={form.websiteUrl}
+              onChange={(e) => updateField("websiteUrl", e.target.value)}
+              placeholder="https://yourstartup.com"
             />
           </div>
 

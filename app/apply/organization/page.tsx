@@ -15,6 +15,7 @@ type ProjectFormState = {
   projectTitle: string;
   budget: string;
   description: string;
+  websiteUrl: string;
 };
 
 export default function CompanyProjectPage() {
@@ -26,6 +27,7 @@ export default function CompanyProjectPage() {
     projectTitle: "",
     budget: "",
     description: "",
+    websiteUrl: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -60,6 +62,7 @@ export default function CompanyProjectPage() {
           submitterName: form.submitterName,
           submitterEmail: form.submitterEmail,
           skillsNeeded: form.skillsNeeded,
+          websiteUrl: form.websiteUrl,
         }),
       });
 
@@ -78,6 +81,7 @@ export default function CompanyProjectPage() {
         projectTitle: "",
         budget: "",
         description: "",
+        websiteUrl: "",
       });
     } catch (err) {
       console.error(err);
@@ -192,6 +196,17 @@ export default function CompanyProjectPage() {
               value={form.description}
               onChange={(e) => updateField("description", e.target.value)}
               placeholder="Outline the main objectives and deliverables..."
+            />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="websiteUrl">Website URL</Label>
+            <Input
+              id="websiteUrl"
+              type="url"
+              value={form.websiteUrl}
+              onChange={(e) => updateField("websiteUrl", e.target.value)}
+              placeholder="https://yourcompany.com"
             />
           </div>
 
