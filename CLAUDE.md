@@ -67,7 +67,7 @@ Three main models in `prisma/schema.prisma`:
 - NextAuth configured in `auth.ts` with Google provider
 - Session provider wraps app in root `layout.tsx`
 - Auth button component at `components/auth/AuthButton.tsx`
-- RBAC roles defined but enforcement is TODO
+- RBAC enforced in API routes via requireRole() in lib/auth-helpers.ts
 
 ### Seeding User Roles
 
