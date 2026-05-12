@@ -1,0 +1,228 @@
+"use client";
+
+import { useState } from "react";
+
+type StartupFormState = {
+  name: string;
+  description: string;
+  deckUrl: string;
+  fundingGoal: string;
+  fundingSiteUrl: string;
+  contact: string;
+};
+
+interface FormProps {
+  onSuccess?: () => void;
+}
+
+export default function StartupForm({ onSuccess }: FormProps) {
+  const [form, setForm] = useState<StartupFormState>({
+    name: "",
+    description: "",
+    deckUrl: "",
+    fundingGoal: "",
+    fundingSiteUrl: "",
+    contact: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
+  const [submitAttempted, setSubmitAttempted] = useState(false);
+
+  function updateField<K extends keyof StartupFormState>(
+    key: K,
+    value: StartupFormState[K],
+  ) {
+    setForm((prev) => ({ ...prev, [key]: value }));
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setSubmitAttempted(true);
+
+    // Basic frontend validation for required fields
+    if (
+      !form.name ||
+      !form.description ||
+      !form.deckUrl ||
+      !form.fundingGoal ||
+      !form.contact
+    ) {
+      return;
+    }
+
+    setLoading(true);
+    setStatus("idle");
+
+    try {
+      const res = await fetch("/api/applications/startup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          StartupName: form.name,
+          StartupDescription: form.description,
+          StartupFundingGoal: form.fundingGoal,
+          StartupDeckUrl: form.deckUrl,
+          StartupFundingSiteUrl: form.fundingSiteUrl,
+          StartupContact: { email: form.contact, name: form.name },
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to submit application");
+      }
+
+      setStatus("success");
+      setSubmitAttempted(false);
+      setForm({
+        name: "",
+        description: "",
+        deckUrl: "",
+        fundingGoal: "",
+        fundingSiteUrl: "",
+        contact: "",
+      });
+
+      // Close modal after delay
+      if (onSuccess) {
+        setTimeout(onSuccess, 1500);
+      }
+    } catch (err) {
+      console.error(err);
+      setStatus("error");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // Styling helpers
+  const baseInputStyles =
+    "w-full px-4 py-2 bg-white border text-sm transition-colors focus:outline-none focus:ring-2";
+  const pillStyles = `${baseInputStyles} rounded-full`;
+  const textareaStyles = `${baseInputStyles} rounded-3xl resize-none`;
+
+  const getInputStateClasses = (value: string, isRequired: boolean) => {
+    if (submitAttempted && isRequired && !value.trim()) {
+      return "border-rose-400 focus:ring-rose-400 focus:border-rose-400"; // Red/Coral error state
+    }
+    return "border-sky-300 focus:ring-[#65c2e8] focus:border-[#65c2e8]"; // Default light blue state
+  };
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-4 flex flex-col"
+      noValidate
+    >
+      {status === "success" && (
+        <div className="rounded-2xl bg-green-50 p-4 text-sm text-green-700 text-center font-medium mb-4">
+          Application submitted successfully!
+        </div>
+      )}
+      {status === "error" && (
+        <div className="rounded-2xl bg-rose-50 p-4 text-sm text-rose-600 text-center font-medium mb-4">
+          Failed to submit application. Please try again.
+        </div>
+      )}
+
+      <div className="flex flex-col gap-1">
+        <label htmlFor="name" className="text-sm text-gray-700 ml-2">
+          Startup name
+        </label>
+        <input
+          id="name"
+          type="text"
+          value={form.name}
+          onChange={(e) => updateField("name", e.target.value)}
+          placeholder="Your startup name"
+          className={`${pillStyles} ${getInputStateClasses(form.name, true)}`}
+          required
+        />
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <label htmlFor="description" className="text-sm text-gray-700 ml-2">
+          Tell us more about your startup!
+        </label>
+        <textarea
+          id="description"
+          value={form.description}
+          onChange={(e) => updateField("description", e.target.value)}
+          placeholder="Lorem ipsum dolor sit amet, consectetur adipiscing elit..."
+          rows={4}
+          className={`${textareaStyles} ${getInputStateClasses(form.description, true)}`}
+          required
+        />
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <label htmlFor="deckUrl" className="text-sm text-gray-700 ml-2">
+          Link to pitch deck
+        </label>
+        <input
+          id="deckUrl"
+          type="url"
+          value={form.deckUrl}
+          onChange={(e) => updateField("deckUrl", e.target.value)}
+          placeholder="https://example.com/pitch-deck"
+          className={`${pillStyles} ${getInputStateClasses(form.deckUrl, true)}`}
+          required
+        />
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <label htmlFor="fundingGoal" className="text-sm text-gray-700 ml-2">
+          Funding goal ($)
+        </label>
+        <input
+          id="fundingGoal"
+          type="text"
+          value={form.fundingGoal}
+          onChange={(e) => updateField("fundingGoal", e.target.value)}
+          placeholder="100,000,000"
+          className={`${pillStyles} ${getInputStateClasses(form.fundingGoal, true)}`}
+          required
+        />
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <label htmlFor="fundingSiteUrl" className="text-sm text-gray-700 ml-2">
+          Link to external funding site
+        </label>
+        <input
+          id="fundingSiteUrl"
+          type="url"
+          value={form.fundingSiteUrl}
+          onChange={(e) => updateField("fundingSiteUrl", e.target.value)}
+          placeholder="https://example.com/funding"
+          className={`${pillStyles} ${getInputStateClasses(form.fundingSiteUrl, false)}`}
+        />
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <label htmlFor="contact" className="text-sm text-gray-700 ml-2">
+          Contact email
+        </label>
+        <input
+          id="contact"
+          type="email"
+          value={form.contact}
+          onChange={(e) => updateField("contact", e.target.value)}
+          placeholder="founder@startup.com"
+          className={`${pillStyles} ${getInputStateClasses(form.contact, true)}`}
+          required
+        />
+      </div>
+
+      <div className="flex justify-center pt-4">
+        <button
+          type="submit"
+          disabled={loading}
+          className="bg-[#f26666] hover:bg-[#e55555] text-white font-bold tracking-wider py-2 px-10 rounded-full border-2 border-white ring-2 ring-[#f26666] shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed uppercase"
+        >
+          {loading ? "Submitting..." : "Apply"}
+        </button>
+      </div>
+    </form>
+  );
+}
