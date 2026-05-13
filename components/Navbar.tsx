@@ -13,7 +13,6 @@ export default function Navbar() {
     if (p === "/" || p === "") return "home";
     if (p.startsWith("/about")) return "about";
     if (p.startsWith("/events")) return "events";
-    if (p.startsWith("/gallery")) return "gallery";
     if (p.startsWith("/apply")) return "apply";
     return "home";
   }, [pathname]);
@@ -22,7 +21,6 @@ export default function Navbar() {
     { id: "home", label: "HOME", href: "/" },
     { id: "about", label: "ABOUT", href: "/about" },
     { id: "events", label: "EVENTS", href: "/events" },
-    { id: "gallery", label: "GALLERY", href: "/gallery" },
     { id: "apply", label: "APPLY", href: "/apply" },
   ];
 

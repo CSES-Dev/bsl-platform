@@ -1,6 +1,12 @@
 import PublicLayout from "@/components/layout/PublicLayout";
 import Link from "next/link";
 
+const galleryLinks = [
+  { href: "/startups", label: "Startups" },
+  { href: "/organizations", label: "Organizations" },
+  { href: "/teams", label: "Teams" },
+];
+
 export default function Page() {
   return (
     <PublicLayout>
@@ -28,6 +34,21 @@ export default function Page() {
           >
             Meet Our Leaders
           </Link>
+        </div>
+
+        <div className="mt-16">
+          <h2 className="text-2xl font-semibold tracking-tight">Explore Our Community</h2>
+          <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {galleryLinks.map(({ href, label }) => (
+              <Link
+                key={href}
+                href={href}
+                className="px-6 py-8 bg-white text-black font-medium hover:bg-black hover:text-white border-2 border-black transition-colors"
+              >
+                {label}
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
     </PublicLayout>
