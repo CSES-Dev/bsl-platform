@@ -3,6 +3,7 @@
 import { useState } from "react";
 import PublicLayout from "@/components/layout/PublicLayout";
 import { leaders } from "../../data/leaders";
+import Image from "next/image";
 
 const BLUE = "#38BFE8";
 const LIGHT_BLUE = "#C9F1FB";
@@ -34,7 +35,7 @@ export default function AboutPage() {
             <button
               type="button"
               onClick={() => setActiveTab("map")}
-              className="relative z-10 h-[42px] rounded-[6px] border-[3px] bg-white px-7 text-[18px] font-normal tracking-wide"
+              className="relative z-10 h-[42px] rounded-[6px] border-[3px] px-7 text-[18px] font-normal tracking-wide"
               style={{
                 borderColor: BLUE,
                 backgroundColor: activeTab === "map" ? LIGHT_BLUE : "white",
@@ -83,11 +84,14 @@ export default function AboutPage() {
                       }`}
                     >
                       {leader.image ? (
-                        <img
+                        <div className="relative h-full w-full">
+                        <Image
                           src={leader.image}
                           alt={leader.name}
-                          className="h-full w-full object-cover"
+                          fill
+                          className="object-cover"
                         />
+                      </div>
                       ) : (
                         <div
                           className="flex h-full w-full items-center justify-center text-5xl font-bold"
@@ -123,7 +127,7 @@ export default function AboutPage() {
 
                       <a
                         href={`mailto:${leader.email}`}
-                        className="mx-auto mt-9 inline-flex w-fit items-center justify-center rounded-full border-[3px] px-5 py-1 text-[16px] font-bold leading-none tracking-[0.12em] text-white md:mx-auto"
+                        className="mx-auto mt-9 inline-flex w-fit items-center justify-center rounded-full border-[3px] px-5 py-1 text-[16px] font-bold leading-none tracking-[0.12em] text-white md:mx-0"
                         style={{
                           backgroundColor: BLUE,
                           borderColor: "white",
