@@ -5,18 +5,15 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Image from "next/image";
 
-// TODO: confirm stats values and labels
+// TODO: confirm stats values
 const STATS = [
   { value: "2,418", label: "Startups Onboarded" },
-  { value: "$847M", label: "Startups Onboarded" },
-  { value: "326", label: "Startups Onboarded" },
+  { value: "$847M", label: "Capital Facilitated" },
+  { value: "326", label: "Connections Made" },
 ];
 
-const INPUT_CLASSES =
-  "block w-full rounded-md border border-stone-300 bg-white px-4 py-2.5 text-sm text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-500/30";
-
 const PINK_BUTTON_CLASSES =
-  "w-full rounded-md border border-[#D9A8A8] bg-[#F5C3C399] px-4 py-2.5 text-sm font-medium text-stone-900 transition-colors hover:bg-[#F5C3C3]";
+  "w-full rounded-md border border-[#D9A8A8] bg-[#F5C3C399] px-4 py-3 text-sm font-medium text-stone-900 transition-colors hover:bg-[#F5C3C3]";
 
 export default function AdminLoginPage() {
   const { data: session, status } = useSession();
@@ -77,8 +74,8 @@ export default function AdminLoginPage() {
         </div>
 
         <div className="relative z-10 grid grid-cols-3 gap-6">
-          {STATS.map((stat) => (
-            <div key={stat.value}>
+          {STATS.map((stat, i) => (
+            <div key={i}>
               <p className="text-3xl font-bold text-stone-900">{stat.value}</p>
               <p className="mt-2 text-[10px] font-semibold uppercase tracking-wider text-stone-600">
                 {stat.label}
@@ -89,84 +86,25 @@ export default function AdminLoginPage() {
       </aside>
 
       <main className="flex w-full flex-1 items-center justify-center bg-[#EBE0E0] px-6 py-12 md:w-1/2">
-        <div className="w-full max-w-md space-y-6">
-          <div className="space-y-2 text-left">
+        <div className="w-full max-w-md">
+          <div className="space-y-3 text-left">
             <h2 className="text-3xl font-bold text-stone-900">Admin Sign In</h2>
-            <p className="text-sm text-stone-700">
+            <p className="text-sm leading-relaxed text-stone-700">
               Sign in with your authorised account. All access is logged and
               audited.
             </p>
           </div>
 
-          {/* TODO: implement email/password login — fields are visual only */}
-          <form onSubmit={(e) => e.preventDefault()} className="space-y-4">
-            <div className="space-y-2">
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-stone-900"
-              >
-                Email
-              </label>
-              <input
-                id="email"
-                type="email"
-                placeholder="you@example.com"
-                autoComplete="email"
-                className={INPUT_CLASSES}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-stone-900"
-              >
-                Password
-              </label>
-              <input
-                id="password"
-                type="password"
-                placeholder="••••••••••••"
-                autoComplete="current-password"
-                className={INPUT_CLASSES}
-              />
-            </div>
-
-            <label className="flex items-center gap-2 text-sm text-stone-800">
-              <input
-                type="checkbox"
-                className="h-4 w-4 rounded border-stone-400"
-              />
-              Keep me signed in on this device
-            </label>
-
-            <button
-              type="submit"
-              disabled
-              className={`${PINK_BUTTON_CLASSES} disabled:cursor-not-allowed disabled:border-[#E8B5B5] disabled:bg-white/60 disabled:text-stone-500 disabled:hover:bg-white/60`}
-            >
-              Continue
-            </button>
-          </form>
-
-          <div className="flex items-center gap-4">
-            <div className="h-px flex-1 bg-stone-400/60" />
-            <span className="text-xs font-semibold uppercase tracking-wider text-stone-700">
-              or
-            </span>
-            <div className="h-px flex-1 bg-stone-400/60" />
-          </div>
-
           <button
             type="button"
             onClick={() => signIn("google", { callbackUrl: "/admin" })}
-            className={`${PINK_BUTTON_CLASSES} flex items-center justify-center gap-3`}
+            className={`${PINK_BUTTON_CLASSES} mt-10 flex items-center justify-center gap-3`}
           >
             <Image src="/google.svg" alt="" width={18} height={18} />
             Continue with Google
           </button>
 
-          <div className="rounded-lg border border-[#F5C3C3] bg-[#F5C3C399] p-4">
+          <div className="mt-12 rounded-lg border border-[#F5C3C3] bg-[#F5C3C399] p-4">
             <p className="text-xs leading-relaxed text-stone-700">
               This is a restricted system for authorised personnel only.
               Unauthorised access attempts are logged and may be subject to
