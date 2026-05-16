@@ -12,6 +12,9 @@ export default function Navbar() {
     const p = (pathname || "/").split("?")[0];
     if (p === "/" || p === "") return "home";
     if (p.startsWith("/about")) return "about";
+    if (p.startsWith("/startups")) return "browse";
+    if (p.startsWith("/organizations")) return "browse";
+    if (p.startsWith("/teams")) return "browse";
     if (p.startsWith("/events")) return "events";
     if (p.startsWith("/apply")) return "apply";
     return "home";
@@ -20,6 +23,7 @@ export default function Navbar() {
   const links: { id: string; label: string; href: string }[] = [
     { id: "home", label: "HOME", href: "/" },
     { id: "about", label: "ABOUT", href: "/about" },
+    { id: "browse", label: "BROWSE", href: "/startups" },
     { id: "events", label: "EVENTS", href: "/events" },
     { id: "apply", label: "APPLY", href: "/apply" },
   ];
