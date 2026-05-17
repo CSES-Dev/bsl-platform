@@ -3,12 +3,13 @@
 import { useState } from "react";
 
 type StartupFormState = {
+  submitterName: string;
+  submitterEmail: string;
   name: string;
   description: string;
   deckUrl: string;
   fundingGoal: string;
   fundingSiteUrl: string;
-  contact: string;
 };
 
 interface FormProps {
@@ -17,12 +18,13 @@ interface FormProps {
 
 export default function StartupForm({ onSuccess }: FormProps) {
   const [form, setForm] = useState<StartupFormState>({
+    submitterName: "",
+    submitterEmail: "",
     name: "",
     description: "",
     deckUrl: "",
     fundingGoal: "",
     fundingSiteUrl: "",
-    contact: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -31,7 +33,7 @@ export default function StartupForm({ onSuccess }: FormProps) {
 
   function updateField<K extends keyof StartupFormState>(
     key: K,
-    value: StartupFormState[K],
+    value: string,
   ) {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
@@ -40,13 +42,11 @@ export default function StartupForm({ onSuccess }: FormProps) {
     e.preventDefault();
     setSubmitAttempted(true);
 
-    // Basic frontend validation for required fields
+    // Standardized check matching the OrgForm style (ignoring the optional fundingSiteUrl)
     if (
-      !form.name ||
-      !form.description ||
-      !form.deckUrl ||
-      !form.fundingGoal ||
-      !form.contact
+      Object.values(form).some(
+        (val) => !val.trim() && val !== form.fundingSiteUrl,
+      )
     ) {
       return;
     }
@@ -64,7 +64,8 @@ export default function StartupForm({ onSuccess }: FormProps) {
           StartupFundingGoal: form.fundingGoal,
           StartupDeckUrl: form.deckUrl,
           StartupFundingSiteUrl: form.fundingSiteUrl,
-          StartupContact: { email: form.contact, name: form.name },
+          submitterName: form.submitterName,
+          submitterEmail: form.submitterEmail,
         }),
       });
 
@@ -75,15 +76,15 @@ export default function StartupForm({ onSuccess }: FormProps) {
       setStatus("success");
       setSubmitAttempted(false);
       setForm({
+        submitterEmail: "",
+        submitterName: "",
         name: "",
         description: "",
         deckUrl: "",
         fundingGoal: "",
         fundingSiteUrl: "",
-        contact: "",
       });
 
-      // Close modal after delay
       if (onSuccess) {
         setTimeout(onSuccess, 1500);
       }
@@ -95,17 +96,17 @@ export default function StartupForm({ onSuccess }: FormProps) {
     }
   }
 
-  // Styling helpers
   const baseInputStyles =
     "w-full px-4 py-2 bg-white border text-sm transition-colors focus:outline-none focus:ring-2";
   const pillStyles = `${baseInputStyles} rounded-full`;
   const textareaStyles = `${baseInputStyles} rounded-3xl resize-none`;
 
-  const getInputStateClasses = (value: string, isRequired: boolean) => {
-    if (submitAttempted && isRequired && !value.trim()) {
-      return "border-rose-400 focus:ring-rose-400 focus:border-rose-400"; // Red/Coral error state
+  // Adjusted to match OrgForm's single-argument structure exactly
+  const getInputStateClasses = (value: string) => {
+    if (submitAttempted && !value.trim()) {
+      return "border-rose-400 focus:ring-rose-400 focus:border-rose-400";
     }
-    return "border-sky-300 focus:ring-[#65c2e8] focus:border-[#65c2e8]"; // Default light blue state
+    return "border-sky-300 focus:ring-[#65c2e8] focus:border-[#65c2e8]";
   };
 
   return (
@@ -125,9 +126,43 @@ export default function StartupForm({ onSuccess }: FormProps) {
         </div>
       )}
 
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="flex flex-col gap-1">
+          <label htmlFor="submitterName" className="text-sm text-gray-700 ml-2">
+            Submitter Name
+          </label>
+          <input
+            id="submitterName"
+            value={form.submitterName}
+            onChange={(e) => updateField("submitterName", e.target.value)}
+            placeholder="Submitter name"
+            className={`${pillStyles} ${getInputStateClasses(form.submitterName)}`}
+            required
+          />
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <label
+            htmlFor="submitterEmail"
+            className="text-sm text-gray-700 ml-2"
+          >
+            Submitter Email
+          </label>
+          <input
+            id="submitterEmail"
+            type="email"
+            value={form.submitterEmail}
+            onChange={(e) => updateField("submitterEmail", e.target.value)}
+            placeholder="Submitter email"
+            className={`${pillStyles} ${getInputStateClasses(form.submitterEmail)}`}
+            required
+          />
+        </div>
+      </div>
+
       <div className="flex flex-col gap-1">
         <label htmlFor="name" className="text-sm text-gray-700 ml-2">
-          Startup name
+          Startup Name
         </label>
         <input
           id="name"
@@ -135,7 +170,7 @@ export default function StartupForm({ onSuccess }: FormProps) {
           value={form.name}
           onChange={(e) => updateField("name", e.target.value)}
           placeholder="Your startup name"
-          className={`${pillStyles} ${getInputStateClasses(form.name, true)}`}
+          className={`${pillStyles} ${getInputStateClasses(form.name)}`}
           required
         />
       </div>
@@ -148,9 +183,9 @@ export default function StartupForm({ onSuccess }: FormProps) {
           id="description"
           value={form.description}
           onChange={(e) => updateField("description", e.target.value)}
-          placeholder="Lorem ipsum dolor sit amet, consectetur adipiscing elit..."
+          placeholder="Outline the main objectives and deliverables..."
           rows={4}
-          className={`${textareaStyles} ${getInputStateClasses(form.description, true)}`}
+          className={`${textareaStyles} ${getInputStateClasses(form.description)}`}
           required
         />
       </div>
@@ -165,7 +200,7 @@ export default function StartupForm({ onSuccess }: FormProps) {
           value={form.deckUrl}
           onChange={(e) => updateField("deckUrl", e.target.value)}
           placeholder="https://example.com/pitch-deck"
-          className={`${pillStyles} ${getInputStateClasses(form.deckUrl, true)}`}
+          className={`${pillStyles} ${getInputStateClasses(form.deckUrl)}`}
           required
         />
       </div>
@@ -180,7 +215,7 @@ export default function StartupForm({ onSuccess }: FormProps) {
           value={form.fundingGoal}
           onChange={(e) => updateField("fundingGoal", e.target.value)}
           placeholder="100,000,000"
-          className={`${pillStyles} ${getInputStateClasses(form.fundingGoal, true)}`}
+          className={`${pillStyles} ${getInputStateClasses(form.fundingGoal)}`}
           required
         />
       </div>
@@ -195,22 +230,7 @@ export default function StartupForm({ onSuccess }: FormProps) {
           value={form.fundingSiteUrl}
           onChange={(e) => updateField("fundingSiteUrl", e.target.value)}
           placeholder="https://example.com/funding"
-          className={`${pillStyles} ${getInputStateClasses(form.fundingSiteUrl, false)}`}
-        />
-      </div>
-
-      <div className="flex flex-col gap-1">
-        <label htmlFor="contact" className="text-sm text-gray-700 ml-2">
-          Contact email
-        </label>
-        <input
-          id="contact"
-          type="email"
-          value={form.contact}
-          onChange={(e) => updateField("contact", e.target.value)}
-          placeholder="founder@startup.com"
-          className={`${pillStyles} ${getInputStateClasses(form.contact, true)}`}
-          required
+          className={`${pillStyles} ${getInputStateClasses(form.fundingSiteUrl)}`}
         />
       </div>
 

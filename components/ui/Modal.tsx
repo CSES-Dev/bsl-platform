@@ -19,10 +19,10 @@ export default function Modal({
     if (isOpen) {
       document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = "unset";
+      document.body.style.overflow = "";
     }
     return () => {
-      document.body.style.overflow = "unset";
+      document.body.style.overflow = "";
     };
   }, [isOpen]);
 
@@ -66,9 +66,7 @@ export default function Modal({
         </div>
 
         {/* Scrollable Form Body */}
-        <div className="p-10 overflow-y-auto flex-1 custom-scrollbar">
-          {children}
-        </div>
+        <div className="p-10 overflow-y-auto flex-1">{children}</div>
       </div>
     </div>
   );
