@@ -9,6 +9,7 @@ const StartupSchema = z.object({
   StartupName: z.string().min(1),
   StartupDescription: z.string().min(1),
   StartupFundingGoal: z.union([z.string().min(1), z.number()]),
+  StartupWebsiteUrl: z.string().url().optional(),
   StartupDeckUrl: z.string().min(1),
   StartupFundingSiteUrl: z.string().optional(), // Optional, just like the frontend
   submitterName: z.string().min(1),
@@ -39,6 +40,7 @@ export async function POST(request: Request) {
     StartupFundingGoal,
     StartupDeckUrl,
     StartupFundingSiteUrl,
+    StartupWebsiteUrl,
     submitterName,
     submitterEmail,
   } = parsed.data;
@@ -55,6 +57,7 @@ export async function POST(request: Request) {
           name: StartupName,
           description: StartupDescription,
           fundingGoal: Number(StartupFundingGoal),
+          websiteUrl: StartupWebsiteUrl,
           deckUrl: StartupDeckUrl,
           fundingSiteUrl: StartupFundingSiteUrl,
         },

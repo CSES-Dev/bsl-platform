@@ -10,6 +10,7 @@ type TeamFormState = {
   teamSize: string;
   projectPreferences: string;
   description: string;
+  websiteUrl: string;
 };
 
 interface FormProps {
@@ -25,6 +26,7 @@ export default function TeamForm({ onSuccess }: FormProps) {
     teamSize: "",
     projectPreferences: "",
     description: "",
+    websiteUrl: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -40,7 +42,7 @@ export default function TeamForm({ onSuccess }: FormProps) {
     e.preventDefault();
     setSubmitAttempted(true);
 
-    if (Object.values(form).some((val) => !val.trim())) {
+    if (Object.entries(form).some(([key, val]) => key !== "websiteUrl" && !val.trim())) {
       return;
     }
 
@@ -70,6 +72,7 @@ export default function TeamForm({ onSuccess }: FormProps) {
         teamSize: "",
         projectPreferences: "",
         description: "",
+        websiteUrl: "",
       });
 
       if (onSuccess) {
@@ -224,6 +227,20 @@ export default function TeamForm({ onSuccess }: FormProps) {
           placeholder="Tell us about your team's background..."
           className={`${textareaStyles} ${getInputStateClasses(form.description)}`}
           required
+        />
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <label htmlFor="websiteUrl" className="text-sm text-gray-700 ml-2">
+          Website URL <span className="text-gray-400">(optional)</span>
+        </label>
+        <input
+          id="websiteUrl"
+          type="url"
+          value={form.websiteUrl}
+          onChange={(e) => updateField("websiteUrl", e.target.value)}
+          placeholder="https://yourteam.com"
+          className={`${pillStyles} border-sky-300 focus:ring-[#65c2e8] focus:border-[#65c2e8] focus:outline-none focus:ring-2`}
         />
       </div>
 
