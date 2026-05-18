@@ -44,7 +44,7 @@ export default function StartupForm({ onSuccess }: FormProps) {
 
     // Standardized check matching the OrgForm style (ignoring the optional fundingSiteUrl)
     if (
-      Object.values(form).some(
+      Object.entries(form).some(
         ([key, val]) => key !== "fundingSiteUrl" && !val.trim()
       )
     ) {
