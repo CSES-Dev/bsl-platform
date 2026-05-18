@@ -40,7 +40,7 @@ export async function POST(request: Request) {
     StartupFundingGoal,
     StartupDeckUrl,
     StartupFundingSiteUrl,
-    StartupWebsiteUrl
+    StartupWebsiteUrl,
     submitterName,
     submitterEmail,
   } = parsed.data;
