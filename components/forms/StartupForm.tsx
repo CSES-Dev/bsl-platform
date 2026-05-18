@@ -230,7 +230,7 @@ export default function StartupForm({ onSuccess }: FormProps) {
           value={form.fundingSiteUrl}
           onChange={(e) => updateField("fundingSiteUrl", e.target.value)}
           placeholder="https://example.com/funding"
-          className={`${pillStyles} ${getInputStateClasses(form.fundingSiteUrl)}`}
+          className={`${pillStyles} border-sky-300 focus:ring-[#65c2e8] focus:border-[#65c2e8] focus:outline-none focus:ring-2`}
         />
       </div>
 
