@@ -7,6 +7,7 @@ type StartupFormState = {
   submitterEmail: string;
   name: string;
   description: string;
+  websiteUrl: string;
   deckUrl: string;
   fundingGoal: string;
   fundingSiteUrl: string;
@@ -22,6 +23,7 @@ export default function StartupForm({ onSuccess }: FormProps) {
     submitterEmail: "",
     name: "",
     description: "",
+    websiteUrl: "",
     deckUrl: "",
     fundingGoal: "",
     fundingSiteUrl: "",
@@ -45,7 +47,7 @@ export default function StartupForm({ onSuccess }: FormProps) {
     // Standardized check matching the OrgForm style (ignoring the optional fundingSiteUrl)
     if (
       Object.entries(form).some(
-        ([key, val]) => key !== "fundingSiteUrl" && !val.trim()
+        ([key, val]) => key !== "fundingSiteUrl" && key !== "websiteUrl" && !val.trim()
       )
     ) {
       return;
@@ -62,6 +64,7 @@ export default function StartupForm({ onSuccess }: FormProps) {
           StartupName: form.name,
           StartupDescription: form.description,
           StartupFundingGoal: form.fundingGoal,
+          StartupWebsiteUrl: form.websiteUrl || undefined,
           StartupDeckUrl: form.deckUrl,
           StartupFundingSiteUrl: form.fundingSiteUrl,
           submitterName: form.submitterName,
@@ -80,6 +83,7 @@ export default function StartupForm({ onSuccess }: FormProps) {
         submitterName: "",
         name: "",
         description: "",
+        websiteUrl: "",
         deckUrl: "",
         fundingGoal: "",
         fundingSiteUrl: "",
@@ -187,6 +191,20 @@ export default function StartupForm({ onSuccess }: FormProps) {
           rows={4}
           className={`${textareaStyles} ${getInputStateClasses(form.description)}`}
           required
+        />
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <label htmlFor="websiteUrl" className="text-sm text-gray-700 ml-2">
+          Website URL <span className="text-gray-400">(optional)</span>
+        </label>
+        <input
+          id="websiteUrl"
+          type="url"
+          value={form.websiteUrl}
+          onChange={(e) => updateField("websiteUrl", e.target.value)}
+          placeholder="https://yourstartup.com"
+          className={`${pillStyles} border-sky-300 focus:ring-[#65c2e8] focus:border-[#65c2e8] focus:outline-none focus:ring-2`}
         />
       </div>
 
