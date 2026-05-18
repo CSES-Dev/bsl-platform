@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { Search, ChevronDown, Image as ImageIcon } from "lucide-react";
+import { Search } from "lucide-react";
 import GalleryCard from "@/components/ui/GalleryCard";
 
 export type GalleryItem = {
   name: string;
   description: string;
   websiteUrl?: string;
+  submitterEmail?: string;
 };
 
 type GalleryGridProps = {
@@ -33,10 +34,9 @@ export default function GalleryGrid({
 
   return (
     <div>
-      {/* Search + Filter row */}
+      {/* Search row */}
       <div className="mb-10 mx-10 flex items-stretch gap-3 rounded-2xl bg-white px-4 py-3 shadow-md">
-        {/* Search input */}
-        <div className="flex flex-[2] items-center gap-3 rounded-xl bg-gray-100 px-4 py-2.5">
+        <div className="flex flex-1 items-center gap-3 rounded-xl bg-gray-100 px-4 py-2.5">
           <Search className="h-5 w-5 shrink-0 text-gray-400" />
           <input
             className="flex-1 bg-transparent text-base outline-none placeholder:text-gray-400"
@@ -44,13 +44,6 @@ export default function GalleryGrid({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
-        </div>
-
-        {/* Filter pill */}
-        <div className="flex flex-[1] items-center gap-3 rounded-xl bg-gray-100 px-4 py-2.5 cursor-pointer select-none">
-          <ImageIcon className="h-5 w-5 text-gray-400" />
-          <span className="flex-1 text-base text-gray-400">Filter</span>
-          <ChevronDown className="h-4 w-4 text-gray-400" />
         </div>
       </div>
 
@@ -64,6 +57,7 @@ export default function GalleryGrid({
               name={item.name}
               description={item.description}
               websiteUrl={item.websiteUrl}
+              submitterEmail={item.submitterEmail}
               applyHref={applyHref}
             />
           ))}

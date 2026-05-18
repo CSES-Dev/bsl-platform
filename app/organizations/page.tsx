@@ -13,11 +13,12 @@ export default async function OrganizationsPage() {
       name: (payload.companyName as string) ?? "Untitled",
       description: (payload.description as string) ?? "",
       websiteUrl: (payload.websiteUrl as string | undefined) ?? undefined,
+      submitterEmail: app.submitterEmail ?? undefined,
     };
   });
 
   return (
-    <GalleryPageLayout title="Apply to Join Organizations & Company Projects">
+    <GalleryPageLayout title="Apply to Join Organizations & Company Projects" highlightFrom="Join">
       <GalleryGrid
         items={items}
         applyHref="/apply/organization"

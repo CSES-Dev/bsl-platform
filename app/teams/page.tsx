@@ -13,11 +13,12 @@ export default async function TeamsPage() {
       name: (payload.teamName as string) ?? "Untitled",
       description: (payload.description as string) ?? "",
       websiteUrl: (payload.websiteUrl as string | undefined) ?? undefined,
+      submitterEmail: app.submitterEmail ?? undefined,
     };
   });
 
   return (
-    <GalleryPageLayout title="Apply to Join Product Teams">
+    <GalleryPageLayout title="Apply to Join Product Teams" highlightFrom="Join">
       <GalleryGrid
         items={items}
         applyHref="/apply/team"

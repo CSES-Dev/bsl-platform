@@ -3,11 +3,13 @@ import PublicLayout from "@/components/layout/PublicLayout";
 
 type GalleryPageLayoutProps = {
   title: string;
+  highlightFrom?: string;
   children: React.ReactNode;
 };
 
 export default function GalleryPageLayout({
   title,
+  highlightFrom,
   children,
 }: GalleryPageLayoutProps) {
   return (
@@ -22,10 +24,10 @@ export default function GalleryPageLayout({
           <div className="mb-10 px-20">
             <h1 className="text-4xl font-bold text-gray-900 md:text-5xl">
               {(() => {
-                const joinIdx = title.indexOf("Join");
-                if (joinIdx < 0) return <span>{title}</span>;
-                const before = title.slice(0, joinIdx);
-                const after = title.slice(joinIdx);
+                const idx = highlightFrom ? title.indexOf(highlightFrom) : -1;
+                if (idx < 0) return <span>{title}</span>;
+                const before = title.slice(0, idx);
+                const after = title.slice(idx);
                 return (
                   <>
                     {before}

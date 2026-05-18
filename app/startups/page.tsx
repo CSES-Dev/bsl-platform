@@ -13,11 +13,12 @@ export default async function StartupsPage() {
       name: (payload.name as string) ?? "Untitled",
       description: (payload.description as string) ?? "",
       websiteUrl: (payload.websiteUrl as string | undefined) ?? undefined,
+      submitterEmail: app.submitterEmail ?? undefined,
     };
   });
 
   return (
-    <GalleryPageLayout title="Apply to Join Startups">
+    <GalleryPageLayout title="Apply to Join Startups" highlightFrom="Join">
       <GalleryGrid
         items={items}
         applyHref="/apply/startup"

@@ -1,17 +1,18 @@
-import Link from "next/link";
 import Image from "next/image";
 
 type GalleryCardProps = {
   name: string;
   description: string;
   websiteUrl?: string;
+  submitterEmail?: string;
   applyHref: string;
 };
 
 export default function GalleryCard({
   name,
   description,
-  applyHref,
+  websiteUrl,
+  submitterEmail,
 }: GalleryCardProps) {
   return (
     <div className="flex flex-col rounded-3xl bg-[#D3EFFA] px-7 py-6 transition-shadow hover:shadow-md">
@@ -28,12 +29,23 @@ export default function GalleryCard({
         </p>
 
         <div className="mt-auto flex justify-start">
-          <Link
-            href={applyHref}
-            className="rounded-full bg-white px-12 py-4 text-base font-bold text-gray-900 underline shadow-sm hover:bg-gray-50 transition-colors"
-          >
-            Apply
-          </Link>
+          {websiteUrl ? (
+            <a
+              href={websiteUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-full bg-white px-12 py-4 text-base font-bold text-gray-900 underline shadow-sm hover:bg-gray-50 transition-colors"
+            >
+              Visit Website
+            </a>
+          ) : submitterEmail ? (
+            <a
+              href={`mailto:${submitterEmail}`}
+              className="rounded-full bg-white px-12 py-4 text-base font-bold text-gray-900 underline shadow-sm hover:bg-gray-50 transition-colors"
+            >
+              Contact
+            </a>
+          ) : null}
         </div>
       </div>
     </div>
