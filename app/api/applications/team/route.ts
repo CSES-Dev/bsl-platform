@@ -12,6 +12,7 @@ const TeamSchema = z.object({
   description: z.string().min(1),
   submitterName: z.string().min(1),
   submitterEmail: z.string().email(),
+  websiteUrl: z.string().url().optional(),
 });
 
 export async function POST(request: Request) {
@@ -38,6 +39,7 @@ export async function POST(request: Request) {
     description,
     submitterName,
     submitterEmail,
+    websiteUrl,
   } = parsed.data;
 
   try {
@@ -53,6 +55,7 @@ export async function POST(request: Request) {
           teamSize: Number(teamSize),
           projectPreferences,
           description,
+          websiteUrl,
         },
       },
     });

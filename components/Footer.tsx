@@ -6,6 +6,9 @@ export default function Footer() {
   const navigationLinks = [
     { label: "Home", href: "/" },
     { label: "About", href: "/about" },
+    { label: "Startups", href: "/startups" },
+    { label: "Organizations", href: "/organizations" },
+    { label: "Teams", href: "/teams" },
     { label: "Events", href: "/events" },
     { label: "Apply", href: "/apply" },
   ];

@@ -12,6 +12,7 @@ const OrgSchema = z.object({
   submitterName: z.string().min(1),
   submitterEmail: z.string().email(),
   skillsNeeded: z.union([z.string().min(1), z.array(z.string())]),
+  websiteUrl: z.string().url().optional(),
 });
 
 export async function POST(request: Request) {
@@ -38,6 +39,7 @@ export async function POST(request: Request) {
     submitterName,
     submitterEmail,
     skillsNeeded,
+    websiteUrl,
   } = parsed.data;
 
   const parsedBudget = Number(String(budget).replace(/[^0-9.-]+/g, ""));
@@ -62,6 +64,7 @@ export async function POST(request: Request) {
           budget: parsedBudget,
           skillsNeeded,
           description,
+          websiteUrl,
         },
       },
     });
