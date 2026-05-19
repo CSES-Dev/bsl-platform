@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Search } from "lucide-react";
+import { Search, Rocket, Building2, Users } from "lucide-react";
 import GalleryCard from "@/components/ui/GalleryCard";
+import EmptyState from "@/components/ui/EmptyState";
 
 export type GalleryItem = {
   name: string;
@@ -11,16 +12,24 @@ export type GalleryItem = {
   submitterEmail?: string;
 };
 
+export type GalleryIconType = "startup" | "organization" | "team";
+
+const iconConfig = {
+  startup: { icon: Rocket, title: "No Startups Yet", description: "Be the first to showcase your startup! Apply now to join our community." },
+  organization: { icon: Building2, title: "No Organizations Yet", description: "Be the first to showcase your organization! Apply now to join our community." },
+  team: { icon: Users, title: "No Teams Yet", description: "Be the first to showcase your team! Apply now to join our community." },
+};
+
 type GalleryGridProps = {
   items: GalleryItem[];
   applyHref: string;
-  emptyMessage?: string;
+  iconType?: GalleryIconType;
 };
 
 export default function GalleryGrid({
   items,
   applyHref,
-  emptyMessage = "No entries yet.",
+  iconType = "startup",
 }: GalleryGridProps) {
   const [query, setQuery] = useState("");
 
@@ -48,7 +57,11 @@ export default function GalleryGrid({
       </div>
 
       {filtered.length === 0 ? (
-        <p className="text-center text-gray-500">{emptyMessage}</p>
+        <EmptyState
+          icon={iconConfig[iconType].icon}
+          title={iconConfig[iconType].title}
+          description={iconConfig[iconType].description}
+        />
       ) : (
         <div className="grid grid-cols-2 gap-5 lg:grid-cols-4">
           {filtered.map((item, i) => (

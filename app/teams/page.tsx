@@ -22,7 +22,7 @@ export default async function TeamsPage() {
       <GalleryGrid
         items={items}
         applyHref="/apply/team"
-        emptyMessage="No approved teams yet. Check back soon!"
+        iconType="team"
       />
     </GalleryPageLayout>
   );
