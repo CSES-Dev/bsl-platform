@@ -22,7 +22,7 @@ export default async function StartupsPage() {
       <GalleryGrid
         items={items}
         applyHref="/apply/startup"
-        emptyMessage="No approved startups yet. Check back soon!"
+        iconType="startup"
       />
     </GalleryPageLayout>
   );

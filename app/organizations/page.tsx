@@ -22,7 +22,7 @@ export default async function OrganizationsPage() {
       <GalleryGrid
         items={items}
         applyHref="/apply/organization"
-        emptyMessage="No approved organizations yet. Check back soon!"
+        iconType="organization"
       />
     </GalleryPageLayout>
   );
