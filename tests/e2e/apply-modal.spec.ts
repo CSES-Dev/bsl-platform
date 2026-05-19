@@ -103,8 +103,6 @@ test.describe("apply modal flow", () => {
     await page.fill("#budget", "$50,000");
     await page.fill("#skillsNeeded", "React, Node.js");
     await page.fill("#description", "A test project description for E2E testing");
-    // Fill optional websiteUrl to avoid validation error (empty string fails url() validation)
-    await page.fill("#websiteUrl", "https://example.com");
 
     // Submit
     await page.getByRole("button", { name: /apply/i }).click();
@@ -130,8 +128,6 @@ test.describe("apply modal flow", () => {
     await page.fill("#skills", "React, Node.js");
     await page.fill("#projectPreferences", "Web apps");
     await page.fill("#description", "A talented team description for E2E testing");
-    // Fill optional websiteUrl to avoid validation error (empty string fails url() validation)
-    await page.fill("#websiteUrl", "https://example.com");
 
     // Submit
     await page.getByRole("button", { name: /apply/i }).click();
