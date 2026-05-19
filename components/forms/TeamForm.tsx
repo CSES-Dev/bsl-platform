@@ -54,7 +54,10 @@ export default function TeamForm({ onSuccess }: FormProps) {
       const res = await fetch("/api/applications/team", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          ...form,
+          websiteUrl: form.websiteUrl || undefined,
+        }),
       });
 
       if (!res.ok) {
