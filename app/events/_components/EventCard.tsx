@@ -82,27 +82,12 @@ export function EventCard({ event }: EventCardProps) {
 
   return (
     <li className="flex flex-col rounded-2xl border bg-white p-4 shadow-sm transition hover:shadow-md md:p-6">
-      <div className="text-[13px] uppercase tracking-[0.12em] text-sky-400">
-        <span className="font-bold">{datePart}</span>
-        <span className="mx-1.5 font-medium opacity-70">·</span>
-        <span className="font-medium">{timePart}</span>
-      </div>
-
-      <div className="mt-2 flex flex-wrap items-start justify-between gap-3">
-        <h2 className="text-lg font-semibold leading-snug text-slate-900 md:text-xl">
-          {event.link ? (
-            <a
-              href={event.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-sky-400 hover:underline hover:decoration-[1.5px] hover:underline-offset-[3px]"
-            >
-              {event.title}
-            </a>
-          ) : (
-            event.title
-          )}
-        </h2>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="text-[13px] uppercase tracking-[0.12em] text-sky-400">
+          <span className="font-bold">{datePart}</span>
+          <span className="mx-1.5 font-medium opacity-70">·</span>
+          <span className="font-medium">{timePart}</span>
+        </div>
         {count > 0 && (
           <span
             aria-live="polite"
@@ -112,6 +97,21 @@ export function EventCard({ event }: EventCardProps) {
           </span>
         )}
       </div>
+
+      <h2 className="mt-2 text-lg font-semibold leading-snug text-slate-900 md:text-xl">
+        {event.link ? (
+          <a
+            href={event.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-sky-400 hover:underline hover:decoration-[1.5px] hover:underline-offset-[3px]"
+          >
+            {event.title}
+          </a>
+        ) : (
+          event.title
+        )}
+      </h2>
 
       {event.location && (
         <div className="mt-2 text-sm text-gray-600">{event.location}</div>
