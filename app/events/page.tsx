@@ -1,8 +1,10 @@
+import { cookies } from "next/headers";
 import PublicLayout from "@/components/layout/PublicLayout";
 import { prisma } from "@/lib/prisma";
 import { EventCard } from "./_components/EventCard";
 
 export default async function EventsPage() {
+  const cookieStore = await cookies();
   let events: {
     id: string;
     title: string;
@@ -54,7 +56,13 @@ export default async function EventsPage() {
         ) : (
           <ul className="space-y-5">
             {events.map((event) => (
-              <EventCard key={event.id} event={event} />
+              <EventCard
+                key={event.id}
+                event={event}
+                alreadyInterested={cookieStore.has(
+                  `bsl_interested_${event.id}`,
+                )}
+              />
             ))}
           </ul>
         )}

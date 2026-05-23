@@ -15,6 +15,7 @@ interface EventCardProps {
     link: string | null;
     interestedCount: number;
   };
+  alreadyInterested: boolean;
 }
 
 function formatKicker(startAt: Date, endAt: Date | null) {
@@ -36,9 +37,9 @@ function formatKicker(startAt: Date, endAt: Date | null) {
   return { datePart, timePart };
 }
 
-export function EventCard({ event }: EventCardProps) {
+export function EventCard({ event, alreadyInterested }: EventCardProps) {
   const [count, setCount] = useState(event.interestedCount);
-  const [disabled, setDisabled] = useState(false);
+  const [disabled, setDisabled] = useState(alreadyInterested);
 
   async function handleExpressInterest() {
     const previousCount = count;
