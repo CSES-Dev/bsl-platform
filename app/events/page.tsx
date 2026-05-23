@@ -1,5 +1,7 @@
 import PublicLayout from "@/components/layout/PublicLayout";
 import { prisma } from "@/lib/prisma";
+import { InterestButton } from "./_components/InterestButton";
+import { CalendarButton } from "./_components/CalendarButton";
 
 export default async function EventsPage() {
   let events: {
@@ -10,6 +12,7 @@ export default async function EventsPage() {
     endAt: Date | null;
     location: string | null;
     link: string | null;
+    interestedCount: number;
   }[] = [];
 
   try {
@@ -28,6 +31,7 @@ export default async function EventsPage() {
         endAt: true,
         location: true,
         link: true,
+        interestedCount: true,
       },
     });
   } catch (err) {
@@ -92,16 +96,33 @@ export default async function EventsPage() {
                     )}
                   </div>
 
-                  {event.link && (
-                    <a
-                      href={event.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex shrink-0 items-center justify-center rounded-full border px-4 py-2 text-sm font-medium hover:bg-gray-50"
-                    >
-                      View Details
-                    </a>
-                  )}
+                  <div className="flex flex-col items-start gap-3 md:items-end">
+                    <InterestButton
+                      eventId={event.id}
+                      initialCount={event.interestedCount}
+                    />
+                    <div className="flex flex-wrap items-center gap-3">
+                      <CalendarButton
+                        event={{
+                          title: event.title,
+                          description: event.description,
+                          startAt: event.startAt,
+                          endAt: event.endAt,
+                          location: event.location,
+                        }}
+                      />
+                      {event.link && (
+                        <a
+                          href={event.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex shrink-0 items-center justify-center rounded-full border px-4 py-2 text-sm font-medium hover:bg-gray-50"
+                        >
+                          View Details
+                        </a>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </li>
             ))}
