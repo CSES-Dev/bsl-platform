@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { googleCalendarUrl } from "@/lib/calendar";
 
 interface EventCardProps {
   event: {
@@ -63,6 +64,20 @@ export function EventCard({ event }: EventCardProps) {
     }
   }
 
+  function handleAddToCalendar() {
+    window.open(
+      googleCalendarUrl({
+        title: event.title,
+        description: event.description,
+        startAt: event.startAt,
+        endAt: event.endAt,
+        location: event.location,
+      }),
+      "_blank",
+      "noopener,noreferrer",
+    );
+  }
+
   const { datePart, timePart } = formatKicker(event.startAt, event.endAt);
 
   return (
@@ -113,7 +128,7 @@ export function EventCard({ event }: EventCardProps) {
           type="button"
           variant="outline"
           size="sm"
-          disabled
+          onClick={handleAddToCalendar}
           className="w-full md:w-auto"
         >
           Add to Calendar
