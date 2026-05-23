@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
 interface EventCardProps {
@@ -35,8 +36,34 @@ function formatKicker(startAt: Date, endAt: Date | null) {
 }
 
 export function EventCard({ event }: EventCardProps) {
+  const [count, setCount] = useState(event.interestedCount);
+  const [disabled, setDisabled] = useState(false);
+
+  async function handleExpressInterest() {
+    const previousCount = count;
+    setCount((c) => c + 1);
+    setDisabled(true);
+
+    try {
+      const res = await fetch(`/api/events/${event.id}/interest`, {
+        method: "POST",
+      });
+
+      if (!res.ok) {
+        if (res.status === 409) {
+          setCount(previousCount);
+        } else {
+          setCount(previousCount);
+          setDisabled(false);
+        }
+      }
+    } catch {
+      setCount(previousCount);
+      setDisabled(false);
+    }
+  }
+
   const { datePart, timePart } = formatKicker(event.startAt, event.endAt);
-  const count = event.interestedCount;
 
   return (
     <li className="flex flex-col rounded-2xl border bg-white p-4 shadow-sm transition hover:shadow-md md:p-6">
@@ -62,7 +89,10 @@ export function EventCard({ event }: EventCardProps) {
           )}
         </h2>
         {count > 0 && (
-          <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">
+          <span
+            aria-live="polite"
+            className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600"
+          >
             {count} interested
           </span>
         )}
@@ -92,7 +122,8 @@ export function EventCard({ event }: EventCardProps) {
           type="button"
           variant="default"
           size="sm"
-          disabled
+          onClick={handleExpressInterest}
+          disabled={disabled}
           className="w-full md:w-auto"
         >
           Express Interest
