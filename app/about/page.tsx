@@ -2,14 +2,33 @@
 
 import { useState } from "react";
 import PublicLayout from "@/components/layout/PublicLayout";
-import { leaders } from "../../data/leaders";
+import { leaders, type Leader } from "../../data/leaders";
 import Image from "next/image";
+import LeadersMap from "@/components/about/LeadersMap";
 
 const BLUE = "#38BFE8";
 const LIGHT_BLUE = "#C9F1FB";
 
+const slugify = (s: string) =>
+  s
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+
 export default function AboutPage() {
   const [activeTab, setActiveTab] = useState<"team" | "map">("team");
+
+  const handleSelectLeader = (leader: Leader) => {
+    setActiveTab("team");
+    requestAnimationFrame(() => {
+      const el = document.getElementById(`leader-${slugify(leader.name)}`);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        el.classList.add("ring-4");
+        setTimeout(() => el.classList.remove("ring-4"), 1500);
+      }
+    });
+  };
 
   return (
     <PublicLayout>
@@ -70,7 +89,8 @@ export default function AboutPage() {
                 return (
                   <div
                     key={leader.name}
-                    className={`mx-auto grid max-w-[980px] grid-cols-1 items-center gap-8 rounded-[18px] px-8 py-5 md:min-h-[310px] md:px-8 md:py-5 ${
+                    id={`leader-${slugify(leader.name)}`}
+                    className={`mx-auto grid max-w-[980px] scroll-mt-24 grid-cols-1 items-center gap-8 rounded-[18px] px-8 py-5 ring-[${BLUE}] transition-shadow md:min-h-[310px] md:px-8 md:py-5 ${
                       isReversed
                         ? "md:grid-cols-[1fr_300px]"
                         : "md:grid-cols-[300px_1fr]"
@@ -144,9 +164,10 @@ export default function AboutPage() {
           )}
 
           {activeTab === "map" && (
-            <div className="text-center text-gray-500">
-              <p>Map coming soon.</p>
-            </div>
+            <LeadersMap
+              leaders={leaders}
+              onSelectLeader={handleSelectLeader}
+            />
           )}
         </section>
       </main>
