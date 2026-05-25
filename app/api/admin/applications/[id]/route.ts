@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { hasRole } from "@/lib/rbac";
+import { sendEmail } from "@/lib/email";
 
 export const dynamic = "force-dynamic";
 
@@ -12,14 +13,17 @@ export async function GET(
   try {
     const session = await auth();
     const role = session?.user?.role;
+
     if (!session?.user?.email || !role) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
     if (!hasRole(role, "REVIEWER")) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const { id } = await params;
+
     const application = await prisma.application.findUnique({
       where: { id },
       select: {
@@ -41,7 +45,10 @@ export async function GET(
     return NextResponse.json({ data: application }, { status: 200 });
   } catch (err) {
     console.error(err);
-    return NextResponse.json({ error: "Failed to get application" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to get application" },
+      { status: 500 },
+    );
   }
 }
 
@@ -52,15 +59,18 @@ export async function PATCH(
   try {
     const session = await auth();
     const role = session?.user?.role;
+
     if (!session?.user?.email || !role) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
     if (!hasRole(role, "REVIEWER")) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const { id } = await params;
     const { status } = await request.json();
+
     if (status !== "approved" && status !== "rejected") {
       return NextResponse.json({ error: "Invalid status" }, { status: 400 });
     }
@@ -80,9 +90,28 @@ export async function PATCH(
       },
     });
 
+    try {
+      const statusText = status === "approved" ? "Approved" : "Rejected";
+
+      await sendEmail({
+        to: updated.submitterEmail,
+        subject: `Your BSL Application Has Been ${statusText}`,
+        html: `
+          <h2>Your BSL Application Has Been ${statusText}</h2>
+          <p>Hi ${updated.submitterName},</p>
+          <p>Your BSL application has been <strong>${statusText.toLowerCase()}</strong>.</p>
+        `,
+      });
+    } catch (emailError) {
+      console.error("Failed to send application status email:", emailError);
+    }
+
     return NextResponse.json({ data: updated }, { status: 200 });
   } catch (err) {
     console.error(err);
-    return NextResponse.json({ error: "Failed to update application" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to update application" },
+      { status: 500 },
+    );
   }
 }
