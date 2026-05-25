@@ -3,21 +3,22 @@ export const runtime = "nodejs";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
+import { sendEmail } from "@/lib/email";
 
-// 1. Update the schema to match the exact keys sent from your frontend
 const StartupSchema = z.object({
   StartupName: z.string().min(1),
   StartupDescription: z.string().min(1),
   StartupFundingGoal: z.union([z.string().min(1), z.number()]),
   StartupWebsiteUrl: z.string().url().optional(),
   StartupDeckUrl: z.string().min(1),
-  StartupFundingSiteUrl: z.string().optional(), // Optional, just like the frontend
+  StartupFundingSiteUrl: z.string().optional(),
   submitterName: z.string().min(1),
   submitterEmail: z.string().email(),
 });
 
 export async function POST(request: Request) {
   let body: unknown;
+
   try {
     body = await request.json();
   } catch {
@@ -33,7 +34,6 @@ export async function POST(request: Request) {
     );
   }
 
-  // 2. Destructure the new fields
   const {
     StartupName,
     StartupDescription,
@@ -50,9 +50,8 @@ export async function POST(request: Request) {
       data: {
         type: "startup",
         status: "pending",
-        // 3. Directly map your clean submitter fields
-        submitterName: submitterName,
-        submitterEmail: submitterEmail,
+        submitterName,
+        submitterEmail,
         payload: {
           name: StartupName,
           description: StartupDescription,
@@ -63,6 +62,34 @@ export async function POST(request: Request) {
         },
       },
     });
+
+    try {
+      if (process.env.BSL_ADMIN_EMAIL) {
+        await sendEmail({
+          to: process.env.BSL_ADMIN_EMAIL,
+          subject: "New Startup Application",
+          html: `
+            <h2>New Startup Application Submitted</h2>
+            <p>A new startup application has been submitted.</p>
+            <p><strong>Submitter:</strong> ${submitterName}</p>
+            <p><strong>Email:</strong> ${submitterEmail}</p>
+            <p><strong>Startup:</strong> ${StartupName}</p>
+          `,
+        });
+      }
+
+      await sendEmail({
+        to: submitterEmail,
+        subject: "Your BSL Application Has Been Submitted",
+        html: `
+          <h2>Application Submitted</h2>
+          <p>Hi ${submitterName},</p>
+          <p>Thanks for submitting your BSL startup application. We received it and will review it soon.</p>
+        `,
+      });
+    } catch (emailError) {
+      console.error("Failed to send startup application email:", emailError);
+    }
 
     return NextResponse.json(
       { success: true, id: newStartupApplication.id },
