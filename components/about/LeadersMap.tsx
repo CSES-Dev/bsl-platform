@@ -15,7 +15,7 @@ const BLUE = "#38BFE8";
 const LIGHT_BLUE = "#C9F1FB";
 const RED = "#E53935";
 
-const GEO_URL = "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json";
+const GEO_URL = "/us-states.json";
 
 const MAP_WIDTH = 800;
 const MAP_HEIGHT = 500;

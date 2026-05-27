@@ -90,7 +90,7 @@ export default function AboutPage() {
                   <div
                     key={leader.name}
                     id={`leader-${slugify(leader.name)}`}
-                    className={`mx-auto grid max-w-[980px] scroll-mt-24 grid-cols-1 items-center gap-8 rounded-[18px] px-8 py-5 ring-[${BLUE}] transition-shadow md:min-h-[310px] md:px-8 md:py-5 ${
+                    className={`mx-auto grid max-w-[980px] scroll-mt-24 grid-cols-1 items-center gap-8 rounded-[18px] px-8 py-5 ring-[#38BFE8] transition-shadow md:min-h-[310px] md:px-8 md:py-5 ${
                       isReversed
                         ? "md:grid-cols-[1fr_300px]"
                         : "md:grid-cols-[300px_1fr]"
