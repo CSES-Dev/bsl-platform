@@ -50,6 +50,8 @@ model Application {
   submitterEmail String
 
   payload        Json
+  reviewComments Json[]   @default([]) 
+
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -57,7 +59,6 @@ model Application {
   @@index([type])
   @@index([status])
 }
-
 model Event {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
