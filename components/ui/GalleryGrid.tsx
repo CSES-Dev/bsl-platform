@@ -23,13 +23,13 @@ const iconConfig = {
 type GalleryGridProps = {
   items: GalleryItem[];
   applyHref: string;
-  iconType?: GalleryIconType;
+  iconType: GalleryIconType;
 };
 
 export default function GalleryGrid({
   items,
   applyHref,
-  iconType = "startup",
+  iconType,
 }: GalleryGridProps) {
   const [query, setQuery] = useState("");
 
@@ -56,12 +56,14 @@ export default function GalleryGrid({
         </div>
       </div>
 
-      {filtered.length === 0 ? (
+      {items.length === 0 ? (
         <EmptyState
           icon={iconConfig[iconType].icon}
           title={iconConfig[iconType].title}
           description={iconConfig[iconType].description}
         />
+      ) : filtered.length === 0 ? (
+        <p className="text-center text-gray-500">No results for &ldquo;{query}&rdquo;</p>
       ) : (
         <div className="grid grid-cols-2 gap-5 lg:grid-cols-4">
           {filtered.map((item, i) => (
