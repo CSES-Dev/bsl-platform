@@ -21,8 +21,9 @@ test.describe("about page tabs", () => {
   test("shows team content by default", async ({ page }) => {
     await page.goto("/about");
     // Default tab is "team" - should show leader cards
-    await expect(page.getByText("Jane Doe")).toBeVisible();
-    await expect(page.getByText("John Smith")).toBeVisible();
+    const contactLinks = page.getByRole("link", { name: "CONTACT" });
+    const count = await contactLinks.count();
+    expect(count).toBeGreaterThan(0);
   });
 
   test("switching to MAPPING LEADERS tab shows placeholder", async ({

@@ -38,8 +38,8 @@ test.describe("apply modal flow", () => {
       page.getByRole("heading", { name: "STARTUP APPLICATION" })
     ).toBeVisible();
 
-    // Click the X button (SVG close button in modal header)
-    await page.locator(".fixed button svg").click();
+    // Click the X button (close button in modal header)
+    await page.locator(".fixed button").first().click();
     await expect(
       page.getByRole("heading", { name: "STARTUP APPLICATION" })
     ).not.toBeVisible();
