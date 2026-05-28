@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
 
 export interface ReviewComment {
   userId: string;
@@ -97,7 +98,7 @@ export default function ReviewComments({
             <div key={index} className="flex gap-4 items-start">
               {/* Avatar Circle */}
               {comment.userImage ? (
-                <img
+                <Image
                   src={comment.userImage}
                   alt={comment.userName}
                   className="w-10 h-10 rounded-full bg-[#B0B8B9] object-cover flex-shrink-0"
