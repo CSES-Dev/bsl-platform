@@ -31,22 +31,6 @@ npx prisma db push   # Push schema changes to MongoDB
 
 ## Architecture
 
-### App Router Structure
-
-```
-app/
-├── api/
-│   ├── auth/[...nextauth]/    # NextAuth handler
-│   ├── applications/startup/  # POST startup applications
-│   ├── events/                # GET public events
-│   └── admin/                 # Admin API (applications, events CRUD)
-├── apply/                     # Application forms (startup, org, team)
-├── admin/                     # Admin dashboard and application review
-├── leaders/                   # Team leadership profiles
-├── events/                    # Public events page
-└── about/                     # About/mission page
-```
-
 ### Key Directories
 
 - **`components/ui/`** - Shadcn/Radix primitives (Button, Input, Card, etc.)
@@ -58,16 +42,30 @@ app/
 ### Database (Prisma/MongoDB)
 
 Three main models in `prisma/schema.prisma`:
-- **User** - Auth with RBAC roles (USER, REVIEWER, AMBASSADOR, SUPER_ADMIN)
+- **User** - Auth with RBAC roles
 - **Application** - Form submissions with JSON payload, status tracking
 - **Event** - Admin-managed events with creator relationship
 
-### Authentication Flow
+### Authentication & RBAC
 
-- NextAuth configured in `auth.ts` with Google provider
-- Session provider wraps app in root `layout.tsx`
-- Auth button component at `components/auth/AuthButton.tsx`
-- RBAC enforced in API routes via requireRole() in lib/auth-helpers.ts
+Two auth entry points exist due to Next.js edge runtime constraints:
+- **`auth.ts`** - Full auth with Prisma callbacks (server components, API routes)
+- **`auth-edge.ts`** - Lightweight auth for middleware (edge-compatible, no Prisma)
+
+Role hierarchy in `lib/rbac.ts` (ascending order): `USER → AMBASSADOR → REVIEWER → SUPER_ADMIN`
+
+Admin path permissions:
+- `/admin`, `/admin/events/*` → AMBASSADOR
+- `/admin/applications/*` → REVIEWER
+- Everything else → SUPER_ADMIN
+
+API route authorization uses `requireRole()` from `lib/apiAuth.ts`:
+```typescript
+const authResult = await requireRole("REVIEWER");
+if (!authResult.ok) {
+  return NextResponse.json({ error: authResult.error }, { status: authResult.status });
+}
+```
 
 ### Seeding User Roles
 
@@ -86,6 +84,13 @@ Use `@/*` to import from project root (configured in tsconfig.json).
 ```typescript
 import { prisma } from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
+```
+
+### Prisma Client Import
+
+The generated Prisma client lives in `generated/prisma/client`. When importing types directly:
+```typescript
+import { Prisma } from "@/generated/prisma/client";
 ```
 
 ## Environment Variables
