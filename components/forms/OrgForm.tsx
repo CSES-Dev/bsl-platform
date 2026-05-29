@@ -57,7 +57,10 @@ export default function OrgForm({ onSuccess }: FormProps) {
       const res = await fetch("/api/applications/org", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          ...form,
+          websiteUrl: form.websiteUrl || undefined,
+        }),
       });
 
       if (!res.ok) {
