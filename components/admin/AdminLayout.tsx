@@ -7,16 +7,17 @@ import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import {
   LayoutDashboard,
+  LayoutGrid,
   FileText,
   Calendar,
   Settings,
-  TrendingUp,
 } from "lucide-react";
 
 const mainNavItems = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { label: "Applications", href: "/admin/applications", icon: FileText },
   { label: "Events", href: "/admin/events", icon: Calendar },
+  { label: "Startup Gallery", href: "/startups", icon: LayoutGrid },
 ];
 
 const systemNavItems = [
@@ -35,100 +36,109 @@ export default function AdminLayout({
     href === "/admin" ? pathname === "/admin" : pathname.startsWith(href);
 
   const userInitial = session?.user?.name?.[0]?.toUpperCase() ?? "?";
+  const userName = session?.user?.name ?? "Admin";
 
   return (
     <div className="min-h-screen flex">
-      <aside className="w-64 border-r flex flex-col">
-        <div className="px-4 pt-5 pb-2">
-          <div className="flex items-center gap-1 leading-none">
-            <span className="text-base font-bold">Big</span>
-            <TrendingUp className="h-3.5 w-3.5 text-emerald-500" />
-          </div>
-          <div className="flex items-center gap-1.5 mt-0.5">
-            <span className="text-base font-bold leading-none">
-              Strategy Labs
-            </span>
-            <span className="h-2 w-2 rounded-full bg-red-500 shrink-0" />
-          </div>
+      <aside className="w-[280px] bg-[#F5F5F5] flex flex-col relative overflow-hidden shrink-0">
+        {/* Decorative circle */}
+        <div className="pointer-events-none absolute bottom-0 left-0 h-[300px] w-[300px] translate-y-1/2 -translate-x-1/4 rounded-full bg-[#FFE5E5] opacity-60" />
+
+        {/* Logo */}
+        <div className="relative z-10 px-6 pt-6">
+          <Image
+            src="/bsl-logo-transparent.png"
+            alt="Big Strategy Labs"
+            width={160}
+            height={50}
+            className="h-12 w-auto object-contain object-left"
+            priority
+          />
         </div>
 
-        <div className="px-3 mt-5 flex-1">
-          <p className="px-1 mb-1.5 text-[10px] font-semibold uppercase tracking-widest text-gray-400">
-            Main
-          </p>
-          <nav className="flex flex-col gap-0.5">
+        {/* Navigation */}
+        <div className="relative z-10 mt-2 flex-1 px-4">
+          <p className="mb-3 px-2 text-xs font-bold text-gray-700">MAIN</p>
+
+          {/* Decorative red half-circle */}
+          <div className="pointer-events-none absolute left-0 top-[40px] h-[200px] w-[60px] overflow-hidden">
+            <div className="absolute right-0 top-[50px] h-[120px] w-[120px] rounded-full bg-red-600 opacity-20" />
+          </div>
+
+          <nav className="relative flex flex-col gap-0.5">
             {mainNavItems.map(({ label, href, icon: Icon }) => {
               const active = isActive(href);
               return (
                 <Link
                   key={href}
                   href={href}
-                  className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                  className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
                     active
-                      ? "bg-gray-900 text-white"
-                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                      ? "bg-gray-400 text-black"
+                      : "text-gray-700 hover:bg-gray-300"
                   }`}
                 >
-                  <Icon className="h-4 w-4 shrink-0" />
+                  <Icon className="h-5 w-5 shrink-0" />
                   {label}
                 </Link>
               );
             })}
           </nav>
-        </div>
 
-        <div className="px-3 mb-4">
-          <p className="px-1 mb-1.5 text-[10px] font-semibold uppercase tracking-widest text-gray-400">
-            System Preference
-          </p>
-          <nav className="flex flex-col gap-0.5">
-            {systemNavItems.map(({ label, icon: Icon }) => (
-              <span
-                key={label}
-                className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-gray-300 cursor-not-allowed"
-              >
-                <Icon className="h-4 w-4 shrink-0" />
-                {label}
-                <span className="ml-auto text-[10px] bg-gray-100 text-gray-400 rounded px-1.5 py-0.5">
-                  Soon
+          <div className="mt-8">
+            <p className="mb-3 px-2 text-xs font-bold text-gray-700">
+              System Preference
+            </p>
+            <nav className="flex flex-col gap-0.5">
+              {systemNavItems.map(({ label, icon: Icon }) => (
+                <span
+                  key={label}
+                  className="flex cursor-not-allowed items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-gray-300"
+                >
+                  <Icon className="h-5 w-5 shrink-0" />
+                  {label}
+                  <span className="ml-auto rounded bg-gray-100 px-1.5 py-0.5 text-[10px] text-gray-400">
+                    Soon
+                  </span>
                 </span>
-              </span>
-            ))}
-          </nav>
+              ))}
+            </nav>
+          </div>
         </div>
 
-        <div className="border-t px-4 py-3 flex items-center gap-3">
-          <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center text-sm font-semibold text-gray-700 shrink-0 overflow-hidden">
-            {session?.user?.image ? (
-              <Image
-                src={session.user.image}
-                referrerPolicy="no-referrer"
-                alt={session.user.name ?? "User"}
-                width={32}
-                height={32}
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              userInitial
-            )}
-          </div>
-          <div className="min-w-0">
-            <p className="text-sm font-semibold text-gray-900 truncate leading-tight">
-              {session?.user?.name ?? "Admin"}
-            </p>
-            <p className="text-xs text-gray-500 truncate">
-              {session?.user?.email ?? ""}
-            </p>
-            {session?.user?.role && (
-              <span className="inline-block mt-0.5 px-1.5 py-0.5 text-[10px] font-medium leading-none rounded bg-blue-100 text-blue-700 capitalize">
-                {session.user.role}
-              </span>
-            )}
+        {/* User profile */}
+        <div className="relative z-10 border-t border-gray-400 p-4">
+          <div className="flex items-center gap-3 rounded-lg bg-[#FFE5E5] p-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white text-sm font-bold text-gray-800">
+              {session?.user?.image ? (
+                <Image
+                  src={session.user.image}
+                  referrerPolicy="no-referrer"
+                  alt={userName}
+                  width={40}
+                  height={40}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                userInitial
+              )}
+            </div>
+            <div className="min-w-0 flex flex-col gap-0.5">
+              <p className="truncate text-base font-semibold leading-none text-gray-900">
+                {userName}
+              </p>
+              {session?.user?.role && (
+                <span className="text-[11px] font-medium capitalize leading-none text-gray-500">
+                  {session.user.role.replace("_", " ")}
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </aside>
 
-      <main className="flex-1 p-6">{children}</main>
+      <main className="flex-1 overflow-auto">{children}</main>
     </div>
   );
 }
+
