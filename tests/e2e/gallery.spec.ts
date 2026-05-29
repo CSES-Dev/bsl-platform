@@ -17,9 +17,7 @@ test.describe("gallery pages", () => {
     test("shows empty state or gallery grid", async ({ page }) => {
       await page.goto("/startups");
       // Either empty state shows OR grid displays - one must be true
-      const emptyMessage = page.getByText(
-        "No approved startups yet. Check back soon!"
-      );
+      const emptyMessage = page.getByText("No Startups Yet");
       const grid = page.locator(".grid");
 
       const hasEmpty = await emptyMessage.isVisible().catch(() => false);
@@ -52,9 +50,7 @@ test.describe("gallery pages", () => {
 
     test("shows empty state or gallery grid", async ({ page }) => {
       await page.goto("/organizations");
-      const emptyMessage = page.getByText(
-        "No approved organizations yet. Check back soon!"
-      );
+      const emptyMessage = page.getByText("No Organizations Yet");
       const grid = page.locator(".grid");
 
       const hasEmpty = await emptyMessage.isVisible().catch(() => false);
@@ -79,9 +75,7 @@ test.describe("gallery pages", () => {
 
     test("shows empty state or gallery grid", async ({ page }) => {
       await page.goto("/teams");
-      const emptyMessage = page.getByText(
-        "No approved teams yet. Check back soon!"
-      );
+      const emptyMessage = page.getByText("No Teams Yet");
       const grid = page.locator(".grid");
 
       const hasEmpty = await emptyMessage.isVisible().catch(() => false);
