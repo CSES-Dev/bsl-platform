@@ -45,9 +45,9 @@ export default async function AdminPage() {
   }
 
   const statCards = [
-    { title: "Active Startups", value: activeStartups, change: "4.21", subtitle: "vs. last month" },
-    { title: "Active Organizations", value: activeOrgs, change: "0.21", subtitle: "this quarter" },
-    { title: "Active Product Teams", value: activeTeams, change: "1.2", subtitle: "vs. last month" },
+    { title: "Active Startups", value: activeStartups },
+    { title: "Active Organizations", value: activeOrgs },
+    { title: "Active Product Teams", value: activeTeams },
   ];
 
   return (
@@ -64,9 +64,9 @@ export default async function AdminPage() {
               className="flex-1 bg-transparent outline-none text-sm text-gray-600 placeholder:text-gray-400"
             />
           </div>
-          <button className="h-10 w-10 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors">
+          <span className="h-10 w-10 flex items-center justify-center rounded-lg">
             <Bell className="h-5 w-5 text-gray-600" />
-          </button>
+          </span>
         </div>
       </div>
 
@@ -83,14 +83,7 @@ export default async function AdminPage() {
           {statCards.map((s) => (
             <div key={s.title} className="bg-[#FFF5F5] rounded-lg p-6">
               <div className="text-sm font-medium text-gray-600 mb-2">{s.title}</div>
-              <div className="flex items-baseline gap-2 mb-1">
-                <div className="text-4xl font-bold text-black">{s.value}</div>
-                <div className="flex items-center text-green-600 text-sm font-medium">
-                  <ArrowUpRight className="h-4 w-4" />
-                  {s.change}
-                </div>
-              </div>
-              <div className="text-xs text-gray-500">{s.subtitle}</div>
+              <div className="text-4xl font-bold text-black">{s.value}</div>
             </div>
           ))}
         </div>
@@ -155,10 +148,10 @@ export default async function AdminPage() {
             <div className="bg-[#F5F5F5] p-6">
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-bold text-black">Recent Activity</h2>
-                <button className="text-blue-600 font-medium text-sm flex items-center gap-1 hover:text-blue-700">
+                <span className="text-blue-600 font-medium text-sm flex items-center gap-1 cursor-default">
                   Audit Log
                   <ArrowUpRight className="h-4 w-4" />
-                </button>
+                </span>
               </div>
             </div>
             <div className="bg-[#FFF5F5] p-6 space-y-1 flex-1">
