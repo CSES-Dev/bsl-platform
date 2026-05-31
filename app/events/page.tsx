@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import PublicLayout from "@/components/layout/PublicLayout";
 import { prisma } from "@/lib/prisma";
+import { interestCookieName } from "@/lib/cookies";
 import { EventCard } from "./_components/EventCard";
 
 export default async function EventsPage() {
@@ -60,7 +61,7 @@ export default async function EventsPage() {
                 key={event.id}
                 event={event}
                 alreadyInterested={cookieStore.has(
-                  `bsl_interested_${event.id}`,
+                  interestCookieName(event.id),
                 )}
               />
             ))}
