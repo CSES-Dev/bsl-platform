@@ -31,6 +31,21 @@ export async function PATCH(req: Request, { params }: RouteContext) {
   if (body.location !== undefined) data.location = body.location ?? null;
   if (body.link !== undefined) data.link = body.link ?? null;
 
+  if (body.type !== undefined) data.type = body.type ?? null;
+  if (body.capacity !== undefined) {
+    const capacity =
+      body.capacity === "" || body.capacity === null
+        ? null
+        : Number(body.capacity);
+    if (capacity !== null && (!Number.isInteger(capacity) || capacity < 1)) {
+      return NextResponse.json(
+        { error: "capacity must be a positive integer" },
+        { status: 400 }
+      );
+    }
+    data.capacity = capacity;
+  }
+
   if (data.startAt && data.endAt && (data.endAt as Date) < (data.startAt as Date)) {
     return NextResponse.json(
       { error: "endAt cannot be before startAt" },
