@@ -112,18 +112,7 @@ export function EventCard({ event, alreadyInterested }: EventCardProps) {
       </div>
 
       <h2 className="mt-2 text-lg font-semibold leading-snug text-slate-900 md:text-xl">
-        {event.link ? (
-          <a
-            href={event.link}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-sky-400 hover:underline hover:decoration-[1.5px] hover:underline-offset-[3px]"
-          >
-            {event.title}
-          </a>
-        ) : (
-          event.title
-        )}
+        {event.title}
       </h2>
 
       {event.location && (
