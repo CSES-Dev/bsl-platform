@@ -59,14 +59,28 @@ export async function POST(req: Request) {
       );
     }
 
+    const capacity =
+      body.capacity === "" || body.capacity === undefined || body.capacity === null
+        ? null
+        : Number(body.capacity);
+
+    if (capacity !== null && (!Number.isInteger(capacity) || capacity < 1)) {
+      return NextResponse.json(
+        { error: "capacity must be a positive integer" },
+        { status: 400 }
+      );
+    }
+
     const created = await prisma.event.create({
       data: {
         title: body.title.trim(),
+        type: body.type?.trim() || null,
         description: body.description?.trim() || null,
         startAt,
         endAt,
-        location: body.location ?? null,
-        link: body.link ?? null,
+        location: body.location?.trim() || null,
+        link: body.link?.trim() || null,
+        capacity,
         createdByUserId: gate.user.id,
       },
     });
