@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { EVENT_TYPES } from "@/lib/eventTypes";
+import { Trash2, Loader2 } from "lucide-react";
 
 type Event = {
   id: string;
@@ -412,7 +413,7 @@ export default function AdminEventsPage() {
                               className="rounded-md px-2 py-1 text-sm text-red-600 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
                               aria-label="Delete event"
                             >
-                              {deletingId === event.id ? "..." : "🗑"}
+                              {deletingId === event.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
                             </button>
                           )}
                         </td>
