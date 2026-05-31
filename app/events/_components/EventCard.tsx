@@ -137,12 +137,24 @@ export function EventCard({ event, alreadyInterested }: EventCardProps) {
       )}
 
       <div className="mt-auto flex flex-col gap-2 pt-5 md:flex-row md:items-center md:justify-end">
+        {event.link && (
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="h-8 w-full px-4 md:w-auto"
+          >
+            <a href={event.link} target="_blank" rel="noopener noreferrer">
+              View Details
+            </a>
+          </Button>
+        )}
         <Button
           type="button"
           variant="outline"
           size="sm"
           onClick={handleAddToCalendar}
-          className="w-full md:w-auto"
+          className="h-8 w-full px-4 md:w-auto"
         >
           Add to Calendar
         </Button>
@@ -152,7 +164,7 @@ export function EventCard({ event, alreadyInterested }: EventCardProps) {
             variant="default"
             size="sm"
             onClick={handleExpressInterest}
-            className="w-full md:w-auto"
+            className="h-8 w-full px-4 md:w-auto"
           >
             Express Interest
           </Button>
