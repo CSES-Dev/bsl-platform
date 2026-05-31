@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { googleCalendarUrl } from "@/lib/calendar";
 
@@ -18,50 +18,60 @@ interface EventCardProps {
   alreadyInterested: boolean;
 }
 
+const TIME_ZONE = "America/Los_Angeles";
+
 function formatKicker(startAt: Date, endAt: Date | null) {
   const datePart = startAt.toLocaleDateString("en-US", {
     weekday: "long",
     month: "long",
     day: "numeric",
+    timeZone: TIME_ZONE,
   });
   const startTime = startAt.toLocaleTimeString("en-US", {
     hour: "numeric",
     minute: "2-digit",
+    timeZone: TIME_ZONE,
   });
-  const timePart = endAt
-    ? `${startTime} – ${endAt.toLocaleTimeString("en-US", {
+  const endTime = endAt
+    ? endAt.toLocaleTimeString("en-US", {
         hour: "numeric",
         minute: "2-digit",
-      })}`
-    : startTime;
+        timeZone: TIME_ZONE,
+      })
+    : null;
+  const timePart = endTime ? `${startTime} – ${endTime} PT` : `${startTime} PT`;
   return { datePart, timePart };
 }
 
 export function EventCard({ event, alreadyInterested }: EventCardProps) {
   const [count, setCount] = useState(event.interestedCount);
-  const [disabled, setDisabled] = useState(alreadyInterested);
+  const [expressedInterest, setExpressedInterest] = useState(alreadyInterested);
+  const inFlight = useRef(false);
 
   async function handleExpressInterest() {
+    if (inFlight.current) return;
+    inFlight.current = true;
     const previousCount = count;
     setCount((c) => c + 1);
-    setDisabled(true);
+    setExpressedInterest(true);
 
     try {
       const res = await fetch(`/api/events/${event.id}/interest`, {
         method: "POST",
       });
 
-      if (!res.ok) {
-        if (res.status === 409) {
-          setCount(previousCount);
-        } else {
-          setCount(previousCount);
-          setDisabled(false);
-        }
+      if (res.ok) {
+        const data: { interestedCount: number } = await res.json();
+        setCount(data.interestedCount);
+      } else {
+        setCount(previousCount);
+        if (res.status !== 409) setExpressedInterest(false);
       }
     } catch {
       setCount(previousCount);
-      setDisabled(false);
+      setExpressedInterest(false);
+    } finally {
+      inFlight.current = false;
     }
   }
 
@@ -89,14 +99,16 @@ export function EventCard({ event, alreadyInterested }: EventCardProps) {
           <span className="mx-1.5 font-medium opacity-70">·</span>
           <span className="font-medium">{timePart}</span>
         </div>
-        {count > 0 && (
-          <span
-            aria-live="polite"
-            className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600"
-          >
-            {count} interested
-          </span>
-        )}
+        <span
+          aria-live="polite"
+          className={
+            count > 0
+              ? "inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600"
+              : "sr-only"
+          }
+        >
+          {count > 0 ? `${count} interested` : ""}
+        </span>
       </div>
 
       <h2 className="mt-2 text-lg font-semibold leading-snug text-slate-900 md:text-xl">
@@ -124,7 +136,7 @@ export function EventCard({ event, alreadyInterested }: EventCardProps) {
         </p>
       )}
 
-      <div className="mt-auto flex flex-col flex-wrap items-stretch gap-2 pt-5 md:flex-row md:items-center md:justify-end">
+      <div className="mt-auto flex flex-col gap-2 pt-5 md:flex-row md:items-center md:justify-end">
         <Button
           type="button"
           variant="outline"
@@ -134,16 +146,17 @@ export function EventCard({ event, alreadyInterested }: EventCardProps) {
         >
           Add to Calendar
         </Button>
-        <Button
-          type="button"
-          variant="default"
-          size="sm"
-          onClick={handleExpressInterest}
-          disabled={disabled}
-          className="w-full md:w-auto"
-        >
-          Express Interest
-        </Button>
+        {!expressedInterest && (
+          <Button
+            type="button"
+            variant="default"
+            size="sm"
+            onClick={handleExpressInterest}
+            className="w-full md:w-auto"
+          >
+            Express Interest
+          </Button>
+        )}
       </div>
     </li>
   );
