@@ -32,9 +32,13 @@ export default function AdminSettingsPage() {
       setLoadingUsers(true);
 
       const response = await fetch("/api/admin/users");
+      if (!response.ok) {
+        setLoadingUsers(false);
+        return;
+      }
       const data: User[] = await response.json();
-
       setUsers(data);
+      
 
       const roleMap = data.reduce<Record<string, Role>>((acc, user) => {
         acc[user.id] = user.role;
@@ -50,33 +54,21 @@ export default function AdminSettingsPage() {
 
   async function saveRole(userId: string) {
     const role = selectedRoles[userId];
-
     setSavingUserId(userId);
-
-    const response = await fetch(`/api/admin/users/${userId}/role`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ role }),
-    });
-
-    if (response.ok) {
-      const updatedUser: User = await response.json();
-
-      setUsers((prevUsers) =>
-        prevUsers.map((user) =>
-          user.id === updatedUser.id ? updatedUser : user
-        )
-      );
-
-      setSelectedRoles((prevRoles) => ({
-        ...prevRoles,
-        [updatedUser.id]: updatedUser.role,
-      }));
+    try {
+      const response = await fetch(`/api/admin/users/${userId}/role`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ role }),
+      });
+      if (response.ok) {
+        const updatedUser: User = await response.json();
+        setUsers((prev) => prev.map((u) => u.id === updatedUser.id ? updatedUser : u));
+        setSelectedRoles((prev) => ({ ...prev, [updatedUser.id]: updatedUser.role }));
+      }
+    } finally {
+      setSavingUserId(null);
     }
-
-    setSavingUserId(null);
   }
 
   return (
