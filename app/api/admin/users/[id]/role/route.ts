@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/apiAuth";
-
-const VALID_ROLES = ["USER", "AMBASSADOR", "REVIEWER", "SUPER_ADMIN"];
+import { ROLES } from "@/lib/rbac";
 
 export async function PATCH(
   request: Request,
@@ -16,7 +15,7 @@ export async function PATCH(
 
   const { role } = await request.json();
 
-  if (!VALID_ROLES.includes(role)) {
+  if (!(ROLES as readonly string[]).includes(role)) {
     return NextResponse.json({ error: "Invalid role" }, { status: 400 });
   }
   
