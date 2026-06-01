@@ -1,7 +1,11 @@
+import { cookies } from "next/headers";
 import PublicLayout from "@/components/layout/PublicLayout";
 import { prisma } from "@/lib/prisma";
+import { interestCookieName } from "@/lib/cookies";
+import { EventCard } from "./_components/EventCard";
 
 export default async function EventsPage() {
+  const cookieStore = await cookies();
   let events: {
     id: string;
     title: string;
@@ -10,6 +14,7 @@ export default async function EventsPage() {
     endAt: Date | null;
     location: string | null;
     link: string | null;
+    interestedCount: number;
   }[] = [];
 
   try {
@@ -28,6 +33,7 @@ export default async function EventsPage() {
         endAt: true,
         location: true,
         link: true,
+        interestedCount: true,
       },
     });
   } catch (err) {
@@ -51,59 +57,13 @@ export default async function EventsPage() {
         ) : (
           <ul className="space-y-5">
             {events.map((event) => (
-              <li
+              <EventCard
                 key={event.id}
-                className="rounded-2xl border bg-white p-6 shadow-sm transition hover:shadow-md"
-              >
-                <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                  <div>
-                    <h2 className="text-xl font-semibold">{event.title}</h2>
-
-                    <p className="mt-2 text-sm text-gray-600">
-                      {event.startAt.toLocaleDateString("en-US", {
-                        weekday: "short",
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
-                      {" at "}
-                      {event.startAt.toLocaleTimeString("en-US", {
-                        hour: "numeric",
-                        minute: "2-digit",
-                      })}
-                      {event.endAt
-                        ? ` - ${event.endAt.toLocaleTimeString("en-US", {
-                            hour: "numeric",
-                            minute: "2-digit",
-                          })}`
-                        : ""}
-                    </p>
-
-                    {event.location && (
-                      <p className="mt-1 text-sm text-gray-600">
-                        {event.location}
-                      </p>
-                    )}
-
-                    {event.description && (
-                      <p className="mt-4 max-w-2xl text-sm leading-6 text-gray-700">
-                        {event.description}
-                      </p>
-                    )}
-                  </div>
-
-                  {event.link && (
-                    <a
-                      href={event.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex shrink-0 items-center justify-center rounded-full border px-4 py-2 text-sm font-medium hover:bg-gray-50"
-                    >
-                      View Details
-                    </a>
-                  )}
-                </div>
-              </li>
+                event={event}
+                alreadyInterested={cookieStore.has(
+                  interestCookieName(event.id),
+                )}
+              />
             ))}
           </ul>
         )}
