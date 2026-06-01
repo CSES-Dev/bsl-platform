@@ -6,7 +6,7 @@ const VALID_ROLES = ["USER", "AMBASSADOR", "REVIEWER", "SUPER_ADMIN"];
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const gate = await requireRole("SUPER_ADMIN");
 
@@ -19,7 +19,16 @@ export async function PATCH(
   if (!VALID_ROLES.includes(role)) {
     return NextResponse.json({ error: "Invalid role" }, { status: 400 });
   }
-
+  
+  const { id } = await params;
+  
+  if (gate.user.id === id) {
+    return NextResponse.json(
+      { error: "Cannot change your own role" },
+      { status: 400 }
+    );
+  }
+  
   const updatedUser = await prisma.user.update({
     where: {
       id: params.id,
