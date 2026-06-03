@@ -7,7 +7,7 @@ export default function AccessDeniedPage() {
       <div className="w-full max-w-sm space-y-8 p-8 text-center">
         <h1 className="text-2xl font-bold text-gray-900">Access Denied</h1>
         <p className="mt-2 text-sm text-gray-500">
-          You don't have permission to view this page.
+          You don&apos;t have permission to view this page.
         </p>
         <button
           onClick={() => signOut({ callbackUrl: "/admin/login" })}
