@@ -78,10 +78,10 @@ export default async function EventsPage() {
                 </p>
                 <Link
                   href="/apply"
-                  className="mt-8 inline-flex items-center gap-2 rounded-full bg-black px-8 py-3 text-sm font-semibold text-white transition-colors hover:bg-gray-800"
+                  className="group mt-8 inline-flex items-center gap-2 rounded-full bg-black px-8 py-3 text-sm font-semibold text-white transition-colors hover:bg-gray-800"
                 >
                   Apply to join the network
-                  <ArrowRight className="h-4 w-4" />
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Link>
               </div>
             </div>

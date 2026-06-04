@@ -52,9 +52,10 @@ export default function Page() {
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
             <Link
               href="/apply"
-              className="inline-flex items-center gap-2 rounded-full bg-black px-8 py-3 text-base font-semibold text-white transition-colors hover:bg-gray-800"
+              className="group inline-flex items-center gap-2 rounded-full bg-black px-8 py-3 text-base font-semibold text-white transition-colors hover:bg-gray-800"
             >
-              Apply <ArrowRight className="h-4 w-4" />
+              Apply{" "}
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
             <Link
               href="/about"
@@ -123,9 +124,10 @@ export default function Page() {
             </p>
             <Link
               href="/apply"
-              className="mt-8 inline-flex items-center gap-2 rounded-full bg-black px-10 py-3 text-base font-semibold text-white transition-colors hover:bg-gray-800"
+              className="group mt-8 inline-flex items-center gap-2 rounded-full bg-black px-10 py-3 text-base font-semibold text-white transition-colors hover:bg-gray-800"
             >
-              Apply Now <ArrowRight className="h-4 w-4" />
+              Apply Now{" "}
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
           </div>
         </div>
