@@ -8,3 +8,4 @@ next-env.d.ts
 *.tsbuildinfo
 tsconfig.tsbuildinfo
 playwright-report/.last-run.json
+.DS_Store

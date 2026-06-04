@@ -1,0 +1,59 @@
+name: CI
+
+# Runs on every pull request targeting main. Configure branch protection on
+# `main` to require the "Lint & Build" check below so failing lint/build blocks
+# merges. (That is the job's `name:`, which is what GitHub shows as the check.)
+on:
+  pull_request:
+    branches: [main]
+
+# Cancel in-progress runs for the same PR when new commits are pushed.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Lint & Build
+    runs-on: ubuntu-latest
+
+    # The gallery pages (/startups, /organizations, /teams) are server
+    # components that query MongoDB during `next build`'s static prerender
+    # step, so the build needs a reachable database. An ephemeral standalone
+    # Mongo is enough — the queries just return empty result sets in CI.
+    services:
+      mongodb:
+        image: mongo:7
+        ports:
+          - 27017:27017
+
+    env:
+      # Build-time placeholders. Real secrets live in Vercel, never in CI.
+      DATABASE_URL: mongodb://localhost:27017/bsl-ci
+      AUTH_SECRET: ci-build-placeholder-secret
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      # react-simple-maps@3 still pins React 18 as a peer, which conflicts with
+      # the project's React 19. --legacy-peer-deps mirrors the local install.
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      # The generated Prisma client is gitignored, so it must be generated
+      # before type-checking and building.
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build

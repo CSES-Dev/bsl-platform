@@ -88,9 +88,9 @@ import { Button } from "@/components/ui/button";
 
 ### Prisma Client Import
 
-The generated Prisma client lives in `generated/prisma/client`. When importing types directly:
+The generated Prisma client is exported from `@prisma/client`. When importing types directly:
 ```typescript
-import { Prisma } from "@/generated/prisma/client";
+import { Prisma } from "@prisma/client";
 ```
 
 ## Environment Variables
