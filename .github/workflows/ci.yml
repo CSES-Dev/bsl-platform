@@ -1,7 +1,8 @@
 name: CI
 
 # Runs on every pull request targeting main. Configure branch protection on
-# `main` to require the "build" job below so failing lint/build blocks merges.
+# `main` to require the "Lint & Build" check below so failing lint/build blocks
+# merges. (That is the job's `name:`, which is what GitHub shows as the check.)
 on:
   pull_request:
     branches: [main]
