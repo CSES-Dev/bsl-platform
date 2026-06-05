@@ -29,6 +29,7 @@ export async function GET(
         submitterName: true,
         submitterEmail: true,
         payload: true,
+        reviewComments: true,
         createdAt: true,
         updatedAt: true,
       },
