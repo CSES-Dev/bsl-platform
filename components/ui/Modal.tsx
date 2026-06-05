@@ -34,14 +34,13 @@ export default function Modal({
       onClick={onClose}
     >
       <div
-        // Dimensions strictly locked to Figma spec
-        className="relative w-[770px] h-[600px] max-w-[95vw] max-h-[95vh] bg-white rounded-3xl shadow-2xl flex flex-col overflow-hidden"
+        className="relative w-[960px] max-w-[92vw] max-h-[90vh] bg-white rounded-3xl shadow-2xl flex flex-col overflow-hidden border-2 border-[#5cc3ef]"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header - Fixed height to preserve modal proportion */}
-        <div className="flex items-center justify-center h-20 border-b border-gray-100 relative shrink-0">
+        {/* Header */}
+        <div className="flex items-center justify-center h-24 border-b border-gray-100 relative shrink-0">
           {title && (
-            <h2 className="text-xl font-black text-black uppercase tracking-widest text-center">
+            <h2 className="text-2xl font-black text-black uppercase tracking-widest text-center">
               {title}
             </h2>
           )}

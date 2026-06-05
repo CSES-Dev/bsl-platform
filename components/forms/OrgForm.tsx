@@ -96,7 +96,7 @@ export default function OrgForm({ onSuccess }: FormProps) {
   }
 
   const baseInputStyles =
-    "w-full px-4 py-2 bg-white border text-sm transition-colors focus:outline-none focus:ring-2";
+    "w-full px-5 py-3 bg-white border text-base transition-colors focus:outline-none focus:ring-2";
   const pillStyles = `${baseInputStyles} rounded-full`;
   const textareaStyles = `${baseInputStyles} rounded-3xl resize-none`;
 
@@ -249,7 +249,7 @@ export default function OrgForm({ onSuccess }: FormProps) {
         <button
           type="submit"
           disabled={loading}
-          className="bg-[#f26666] hover:bg-[#e55555] text-white font-bold tracking-wider py-2 px-10 rounded-full border-2 border-white ring-2 ring-[#f26666] shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed uppercase"
+          className="bg-sky-100 hover:bg-sky-200 text-sky-600 font-bold tracking-wider py-3 px-12 rounded-full border-2 border-white ring-2 ring-[#5cc3ef] shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed uppercase"
         >
           {loading ? "Submitting..." : "Apply"}
         </button>
