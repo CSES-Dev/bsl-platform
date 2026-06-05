@@ -39,7 +39,7 @@ export default function AdminLayout({
   const userName = session?.user?.name ?? "Admin";
 
   return (
-    <div className="min-h-screen flex">
+    <div className="h-screen flex">
       <aside className="w-[280px] bg-[#F5F5F5] flex flex-col relative overflow-hidden shrink-0">
         {/* Decorative circle */}
         <div className="pointer-events-none absolute bottom-0 left-0 h-[300px] w-[300px] translate-y-1/2 -translate-x-1/4 rounded-full bg-[#FFE5E5] opacity-60" />

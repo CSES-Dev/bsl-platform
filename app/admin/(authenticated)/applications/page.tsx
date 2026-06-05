@@ -1,9 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Bell, Building2, File, Search } from "lucide-react";
 import { useSession } from "next-auth/react";
-import ApproveRejectButtons from "@/components/admin/ApproveRejectButtons";
+import ApproveRejectButtons, {
+  type Application,
+} from "@/components/admin/ApproveRejectButtons";
 
 const TYPE_LABEL: Record<string, string> = {
   startup: "Startup",
@@ -12,6 +15,7 @@ const TYPE_LABEL: Record<string, string> = {
 };
 
 const TYPE_FILTER_OPTIONS = [
+  { label: "All Types", value: "" },
   { label: "Startups", value: "startup" },
   { label: "Organizations", value: "org" },
   { label: "Teams", value: "team" },
@@ -59,26 +63,52 @@ function timeAgo(date: Date): string {
 }
 
 export default function ApplicationsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex h-full items-center justify-center bg-white text-sm text-gray-400">
+          Loading…
+        </div>
+      }
+    >
+      <ApplicationsPageContent />
+    </Suspense>
+  );
+}
+
+function ApplicationsPageContent() {
   const { data: session } = useSession();
-  const [typeFilter, setTypeFilter] = useState("startup");
+  const searchParams = useSearchParams();
+  const [typeFilter, setTypeFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("pending");
   const [searchQuery, setSearchQuery] = useState("");
   const [applications, setApplications] = useState<ApplicationListItem[]>([]);
   const [loadingList, setLoadingList] = useState(true);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(
+    searchParams.get("id"),
+  );
   const [detail, setDetail] = useState<ApplicationDetail | null>(null);
   const [loadingDetail, setLoadingDetail] = useState(false);
-  const [comments, setComments] = useState<ReviewComment[]>([]);
   const [newComment, setNewComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   const fetchList = useCallback(async () => {
     setLoadingList(true);
-    const params = new URLSearchParams({ type: typeFilter });
+    const params = new URLSearchParams();
+    if (typeFilter) params.set("type", typeFilter);
     if (statusFilter !== "all") params.set("status", statusFilter);
     try {
       const res = await fetch(`/api/admin/applications?${params}`);
-      if (!res.ok) return;
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        setError(
+          (body as { error?: string }).error ?? "Failed to load applications",
+        );
+        setApplications([]);
+        return;
+      }
+      setError(null);
       const { data }: { data: ApplicationListItem[] } = await res.json();
       setApplications(data);
       if (data.length > 0) {
@@ -89,6 +119,9 @@ export default function ApplicationsPage() {
         setSelectedId(null);
         setDetail(null);
       }
+    } catch {
+      setError("Failed to load applications");
+      setApplications([]);
     } finally {
       setLoadingList(false);
     }
@@ -106,31 +139,26 @@ export default function ApplicationsPage() {
     setLoadingDetail(true);
     fetch(`/api/admin/applications/${selectedId}`)
       .then((r) => r.json())
-      .then(({ data }) => {
-        setDetail(data);
-        setComments(data?.reviewComments ?? []);
-      })
+      .then(({ data }) => setDetail(data))
       .catch(() => setDetail(null))
       .finally(() => setLoadingDetail(false));
   }, [selectedId]);
 
-  function handleStatusUpdate(updated: {
-    id: string;
-    status: string;
-    [key: string]: unknown;
-  }) {
+  function handleStatusUpdate(updated: Application) {
     setDetail((prev) =>
       prev ? { ...prev, ...updated, reviewComments: prev.reviewComments } : null,
     );
     setApplications((prev) =>
-      prev.map((a) => (a.id === updated.id ? { ...a, status: updated.status } : a)),
+      prev.map((a) =>
+        a.id === updated.id ? { ...a, status: updated.status } : a,
+      ),
     );
   }
 
   async function handleAddComment() {
     if (!newComment.trim() || !detail || submitting) return;
     setSubmitting(true);
-    const prev = [...comments];
+    const prevComments = detail.reviewComments;
     const optimistic: ReviewComment = {
       userId: session?.user?.email ?? "temp",
       userName: session?.user?.name ?? "You",
@@ -138,7 +166,9 @@ export default function ApplicationsPage() {
       text: newComment.trim(),
       createdAt: new Date().toISOString(),
     };
-    setComments([...comments, optimistic]);
+    setDetail((d) =>
+      d ? { ...d, reviewComments: [...d.reviewComments, optimistic] } : d,
+    );
     setNewComment("");
     try {
       const res = await fetch(
@@ -151,9 +181,9 @@ export default function ApplicationsPage() {
       );
       if (!res.ok) throw new Error("Failed");
       const updated: ReviewComment[] = await res.json();
-      setComments(updated);
+      setDetail((d) => (d ? { ...d, reviewComments: updated } : d));
     } catch {
-      setComments(prev);
+      setDetail((d) => (d ? { ...d, reviewComments: prevComments } : d));
       setNewComment(optimistic.text);
     } finally {
       setSubmitting(false);
@@ -173,6 +203,7 @@ export default function ApplicationsPage() {
   });
 
   const payload = detail?.payload;
+  const comments = detail?.reviewComments ?? [];
 
   return (
     <div className="flex h-full flex-col bg-white">
@@ -239,13 +270,18 @@ export default function ApplicationsPage() {
 
           {/* List */}
           <div className="flex-1 overflow-auto">
-            {loadingList ? (
+            {error ? (
+              <div className="m-4 rounded border border-red-200 bg-red-50 p-4 text-center text-sm text-red-700">
+                {error}
+              </div>
+            ) : loadingList ? (
               <div className="p-8 text-center text-gray-500 text-sm">
                 Loading…
               </div>
             ) : filteredApplications.length === 0 ? (
               <div className="p-8 text-center text-gray-500 text-sm">
-                No pending applications found
+                No {statusFilter === "all" ? "" : `${statusFilter} `}
+                applications found
               </div>
             ) : (
               filteredApplications.map((app) => (
@@ -286,10 +322,9 @@ export default function ApplicationsPage() {
                 {loadingDetail ? (
                   <p className="text-sm text-gray-400">Loading…</p>
                 ) : (
-                  <>
-                    <p className="text-lg font-medium">No applications found</p>
-                    <p className="text-sm">Try adjusting your filters</p>
-                  </>
+                  <p className="text-lg font-medium">
+                    Select an application to review
+                  </p>
                 )}
               </div>
             </div>
@@ -338,21 +373,30 @@ export default function ApplicationsPage() {
                 {/* Details Grid */}
                 <div className="bg-white p-4">
                   <div className="grid grid-cols-4 gap-3 mb-3">
-                    {/* Funding Source, Location, Team Size — decorative (no drilldown yet) */}
+                    {/* Stats pulled from the application + payload */}
                     {[
-                      { label: "Funding Source", key: "fundingSource" },
-                      { label: "Location", key: "location" },
-                      { label: "Team Size", key: "teamSize" },
-                    ].map(({ label, key }) => (
-                      <div
-                        key={key}
-                        className="text-left hover:bg-gray-50 p-2 rounded transition-colors cursor-default"
-                      >
+                      {
+                        label: "Funding Goal",
+                        value:
+                          payload?.fundingGoal != null
+                            ? `$${Number(payload.fundingGoal).toLocaleString()}`
+                            : "—",
+                      },
+                      {
+                        label: "Submitter",
+                        value: detail.submitterName || "—",
+                      },
+                      {
+                        label: "Submitted",
+                        value: new Date(detail.createdAt).toLocaleDateString(),
+                      },
+                    ].map(({ label, value }) => (
+                      <div key={label} className="text-left p-2 rounded">
                         <div className="text-[10px] text-gray-500 mb-1">
                           {label}
                         </div>
                         <div className="font-semibold text-sm text-black">
-                          {payload?.[key] != null ? String(payload[key]) : "—"}
+                          {value}
                         </div>
                       </div>
                     ))}
@@ -376,26 +420,27 @@ export default function ApplicationsPage() {
                     </div>
                   </div>
 
-                  {/* Documents — decorative until file uploads are implemented */}
+                  {/* Documents — links pulled from the application payload */}
                   <div className="grid grid-cols-2 gap-3">
                     {[
-                      "Pitch Deck",
-                      "Financial Documents",
-                      "Cap Table",
-                      "Financial Projections",
-                    ].map((doc) => (
-                      <span
-                        key={doc}
-                        className="flex items-center gap-2 p-2.5 bg-[#FFF5F5] rounded cursor-default"
-                      >
-                        <File className="size-4 text-gray-500" />
-                        <div className="flex-1">
+                      { label: "Pitch Deck", key: "deckUrl" },
+                      { label: "Funding Site", key: "fundingSiteUrl" },
+                    ]
+                      .filter(({ key }) => payload?.[key])
+                      .map(({ label, key }) => (
+                        <a
+                          key={key}
+                          href={String(payload?.[key])}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 p-2.5 bg-[#FFF5F5] rounded hover:bg-red-100 transition-colors"
+                        >
+                          <File className="size-4 text-gray-500" />
                           <div className="font-medium text-xs text-black">
-                            {doc}
+                            {label}
                           </div>
-                        </div>
-                      </span>
-                    ))}
+                        </a>
+                      ))}
                   </div>
                 </div>
               </div>
@@ -429,8 +474,11 @@ export default function ApplicationsPage() {
                         No comments yet.
                       </div>
                     ) : (
-                      comments.map((comment, i) => (
-                        <div key={i} className="flex items-start gap-2">
+                      comments.map((comment) => (
+                        <div
+                          key={`${comment.userId}-${comment.createdAt}`}
+                          className="flex items-start gap-2"
+                        >
                           <div className="size-7 bg-gray-300 rounded-full flex items-center justify-center flex-shrink-0">
                             <span className="text-xs font-semibold text-gray-700">
                               {comment.userName?.[0]?.toUpperCase() ?? "?"}

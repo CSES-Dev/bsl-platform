@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 
-interface Application {
+export interface Application {
   id: string;
   type: string;
   status: string;
